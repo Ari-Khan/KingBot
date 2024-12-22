@@ -383,8 +383,8 @@ client.on("messageCreate", async (message) => {
       const timeTakenMinutes = timeTaken / 60;
 
       const userResponse = response.content.trim();
-      const correctWords = splitString(randomString);
-      const userWords = splitString(userResponse);
+      const correctWords = randomString.split(" ");
+      const userWords = userResponse.split(" ");
 
       let wordMistakes = 0;
       let characterMistakes = 0;
@@ -464,8 +464,8 @@ client.on("messageCreate", async (message) => {
       const timeTakenMinutes = timeTaken / 60;
 
       const userResponse = response.content.trim();
-      const correctWords = splitString(randomString);
-      const userWords = splitString(userResponse);
+      const correctWords = randomString.split(" ");
+      const userWords = userResponse.split(" ");
 
       let wordMistakes = 0;
       let characterMistakes = 0;
@@ -1347,20 +1347,9 @@ client.on("messageCreate", async (message) => {
         }
       });
 
-      const messageLines = portfolioMessage.split("\n");
-      let currentChunk = "";
-
-      for (const line of messageLines) {
-        if (currentChunk.length + line.length + 1 > 2000) {
-          await message.channel.send(currentChunk);
-          currentChunk = "";
-        }
-
-        currentChunk += line + "\n";
-      }
-
-      if (currentChunk) {
-        await message.channel.send(currentChunk);
+      const messageChunks = chunkText(portfolioMessage);
+      for (const chunk of messageChunks) {
+        await message.channel.send(chunk);
       }
     } catch (error) {
       console.error("Error fetching portfolio:", error);
@@ -2028,24 +2017,7 @@ client.on("messageCreate", async (message) => {
       const result = await gemini20Flash.generateContent(input);
       const responseText = result.response.text();
 
-      const chunkSize = 2000;
-      let chunks = [];
-      let currentChunk = "";
-
-      const lines = responseText.split("\n");
-
-      for (const line of lines) {
-        if (currentChunk.length + line.length > chunkSize) {
-          chunks.push(currentChunk);
-          currentChunk = line;
-        } else {
-          currentChunk += (currentChunk ? "\n" : "") + line;
-        }
-      }
-
-      if (currentChunk) {
-        chunks.push(currentChunk);
-      }
+      const chunks = chunkText(responseText);
 
       for (const chunk of chunks) {
         await message.reply(chunk);
@@ -2161,24 +2133,7 @@ client.on("messageCreate", async (message) => {
         message: responseText,
       });
 
-      const chunkSize = 2000;
-      let chunks = [];
-      let currentChunk = "";
-
-      const lines = responseText.split("\n");
-
-      for (const line of lines) {
-        if (currentChunk.length + line.length > chunkSize) {
-          chunks.push(currentChunk);
-          currentChunk = line;
-        } else {
-          currentChunk += (currentChunk ? "\n" : "") + line;
-        }
-      }
-
-      if (currentChunk) {
-        chunks.push(currentChunk);
-      }
+      const chunks = chunkText(responseText);
 
       for (const chunk of chunks) {
         await message.reply(chunk);
@@ -2266,29 +2221,6 @@ client.on("messageCreate", async (message) => {
 
       const thoughtProcess = response.candidates[0].content.parts[0].text || "No thought process available.";
       const finalResponse = response.candidates[0].content.parts[1]?.text || "No response available.";
-
-      const chunkSize = 2000;
-
-      const chunkText = (text) => {
-        let chunks = [];
-        let currentChunk = "";
-        const lines = text.split("\n");
-
-        for (const line of lines) {
-          if (currentChunk.length + line.length > chunkSize) {
-            chunks.push(currentChunk);
-            currentChunk = line;
-          } else {
-            currentChunk += (currentChunk ? "\n" : "") + line;
-          }
-        }
-
-        if (currentChunk) {
-          chunks.push(currentChunk);
-        }
-
-        return chunks;
-      };
 
       const completeFinalResponse = `**Response:** \n\n${finalResponse}`;
       const finalResponseChunks = chunkText(completeFinalResponse);
@@ -2884,7 +2816,6 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 //Media Slash Command Listeners
-
 client.on("interactionCreate", (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -2960,7 +2891,6 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 //Miscellaneous Slash Command Listeners
-
 client.on("interactionCreate", (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -2988,9 +2918,6 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 //General Functions
-
-//Information/Management Functions
-
 async function resolveUser(query, message) {
   if (message.mentions.users.size) {
     return message.mentions.users.first().id;
@@ -3033,8 +2960,19 @@ function chunkText(text, chunkSize = 2000) {
   return chunks;
 }
 
-//Entertainment Functions
+function formatNumber(number) {
+  if (number >= 1e9) {
+    return (number / 1e9).toFixed(2) + 'B';
+  } else if (number >= 1e6) {
+    return (number / 1e6).toFixed(2) + 'M';
+  } else if (number >= 1e3) {
+    return (number / 1e3).toFixed(2) + 'K';
+  } else {
+    return number.toString();
+  }
+}
 
+//Entertainment Functions
 function getRandomRaceWords(numWords) {
   const shuffled = raceWordBank.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, numWords).join(" ");
@@ -3045,12 +2983,7 @@ function getRandomTestWords(numWords) {
   return shuffled.slice(0, numWords).join(" ");
 }
 
-function splitString(str) {
-  return str.split(" ");
-}
-
 //Economy Functions
-
 async function checkSelfBalance(message) {
   let user = await User.findOne({ discordId: message.author.id });
 
@@ -3235,26 +3168,7 @@ async function checkUserNetWorth(userId, message) {
   }
 }
 
-async function getBalanceLeaderboardSlash(interaction) {
-  const leaderboard = await User.find().sort({ balance: -1 }).limit(10);
-
-  if (!leaderboard.length) {
-    return interaction.reply("No leaderboard data available.");
-  }
-
-  const leaderboardString = leaderboard
-    .map((user, index) => {
-      const username = user.username || `Unknown User (${user.discordId})`;
-      const balance = user.balance.toFixed(2);
-      return `${index + 1}. **${username}:** $${balance}`;
-    })
-    .join("\n");
-
-  return interaction.reply("**Global Leaderboard:**\n" + leaderboardString);
-}
-
 //Casino Functions
-
 function createDeck() {
   const suits = ["♠", "♥", "♦", "♣"];
   const cards = [];
@@ -3289,7 +3203,6 @@ function calculateValue(hand) {
 }
 
 //Stock Functions
-
 async function fetchStockPrice(symbol) {
   try {
     const quote = await yahooFinance.quote(symbol);
@@ -3446,18 +3359,6 @@ async function fetchStockData(symbol) {
 
   } catch (error) {
     return null;
-  }
-}
-
-function formatNumber(number) {
-  if (number >= 1e9) {
-    return (number / 1e9).toFixed(2) + 'B';
-  } else if (number >= 1e6) {
-    return (number / 1e6).toFixed(2) + 'M';
-  } else if (number >= 1e3) {
-    return (number / 1e3).toFixed(2) + 'K';
-  } else {
-    return number.toString();
   }
 }
 
@@ -3689,7 +3590,6 @@ async function sellKingbotStock(message, amount) {
 //Slash Functions
 
 //Slash Economy Functions
-
 async function checkSelfBalanceSlash(interaction) {
   let user = await User.findOne({ discordId: interaction.user.id });
 
@@ -3853,6 +3753,24 @@ async function handlePaySlash(interaction) {
   await interaction.reply(`Successfully transferred $${payAmount.toFixed(2)} to <@${targetUserId}>.`);
 }
 
+async function getBalanceLeaderboardSlash(interaction) {
+  const leaderboard = await User.find().sort({ balance: -1 }).limit(10);
+
+  if (!leaderboard.length) {
+    return interaction.reply("No leaderboard data available.");
+  }
+
+  const leaderboardString = leaderboard
+    .map((user, index) => {
+      const username = user.username || `Unknown User (${user.discordId})`;
+      const balance = user.balance.toFixed(2);
+      return `${index + 1}. **${username}:** $${balance}`;
+    })
+    .join("\n");
+
+  return interaction.reply("**Global Leaderboard:**\n" + leaderboardString);
+}
+
 //Temporary
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$human")) {
@@ -3861,7 +3779,6 @@ client.on("messageCreate", async (message) => {
     );
   }
 });
-
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$adminstartping")) {

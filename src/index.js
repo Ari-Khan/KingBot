@@ -2300,7 +2300,7 @@ client.on("messageCreate", async (message) => {
       const thoughtProcess = response.candidates[0].content.parts[1]?.text || "No thought process available.";
 
       const chunkSize = 2000;
-      
+
       const chunkText = (text) => {
         let chunks = [];
         let currentChunk = "";

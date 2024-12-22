@@ -3085,35 +3085,37 @@ async function checkSelfNetWorth(message) {
 
     let totalNetWorth = { USD: user.balance };
 
-    if (user.stocks && user.stocks.length > 0) {
-      for (const stock of user.stocks) {
-        const currentPrice = await fetchStockPrice(stock.symbol);
-        const stockCurrency = await fetchStockCurrency(stock.symbol);
+    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
+    const otherStocks = user.stocks.filter(stock => stock.symbol !== "KGB");
 
-        if (currentPrice !== null && currentPrice !== undefined) {
-          const stockValue = currentPrice * stock.amount;
+    for (const stock of otherStocks) {
+      const currentPrice = await fetchStockPrice(stock.symbol);
+      const stockCurrency = await fetchStockCurrency(stock.symbol);
 
-          if (!totalNetWorth[stockCurrency]) {
-            totalNetWorth[stockCurrency] = 0;
-          }
+      if (currentPrice !== null && currentPrice !== undefined) {
+        const stockValue = currentPrice * stock.amount;
 
-          totalNetWorth[stockCurrency] += stockValue;
-        } else {
-          console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
+        if (!totalNetWorth[stockCurrency]) {
+          totalNetWorth[stockCurrency] = 0;
         }
+
+        totalNetWorth[stockCurrency] += stockValue;
+      } else {
+        console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
       }
     }
 
-    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
     if (kgbStock) {
-      const kgbPrice = await fetchStockPrice("KGB");
+      const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
 
-      if (kgbPrice !== null && kgbPrice !== undefined) {
-        const kgbValue = kgbPrice * kgbStock.amount;
-        if (!totalNetWorth["USD"]) {
-          totalNetWorth["USD"] = 0;
+      if (kgbData) {
+        const kgbValue = kgbData.price * kgbStock.amount;
+
+        if (!totalNetWorth[kgbData.currency]) {
+          totalNetWorth[kgbData.currency] = 0;
         }
-        totalNetWorth["USD"] += kgbValue;
+
+        totalNetWorth[kgbData.currency] += kgbValue;
       } else {
         console.warn("KGB stock is unavailable or invalid.");
       }

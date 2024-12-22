@@ -2296,15 +2296,15 @@ client.on("messageCreate", async (message) => {
       const result = await gemini20FlashThinking.generateContent(prompt);
       const response = result.response;
 
-      const finalResponse = response.text || "No response available.";
-      const thoughtProcess = response.thoughtProcess || "No thought process available.";
+      const finalResponse = response.candidates[0].content.parts[0].text || "No response available.";
+      const thoughtProcess = response.candidates[0].content.parts[1]?.text || "No thought process available.";
 
       const chunkSize = 2000;
 
       const chunkText = (text) => {
         let chunks = [];
         let currentChunk = "";
-        const lines = text.toString().split("\n");
+        const lines = text.split("\n");
 
         for (const line of lines) {
           if (currentChunk.length + line.length > chunkSize) {
@@ -2322,7 +2322,8 @@ client.on("messageCreate", async (message) => {
         return chunks;
       };
 
-      const finalResponseChunks = chunkText(finalResponse);
+      const finalResponseWithPrefix = `Response: ${finalResponse}`;
+      const finalResponseChunks = chunkText(finalResponseWithPrefix);
       for (const chunk of finalResponseChunks) {
         await message.reply(chunk);
       }

@@ -1826,24 +1826,7 @@ client.on("messageCreate", async (message) => {
       const response = result.response;
       const text = response.text();
 
-      const chunkSize = 2000;
-      let chunks = [];
-      let currentChunk = "";
-
-      const lines = text.split("\n");
-
-      for (const line of lines) {
-        if (currentChunk.length + line.length > chunkSize) {
-          chunks.push(currentChunk);
-          currentChunk = line;
-        } else {
-          currentChunk += (currentChunk ? "\n" : "") + line;
-        }
-      }
-
-      if (currentChunk) {
-        chunks.push(currentChunk);
-      }
+      const chunks = chunkText(text);
 
       for (const chunk of chunks) {
         await message.reply(chunk);
@@ -1943,24 +1926,7 @@ client.on("messageCreate", async (message) => {
       let result = await chat.sendMessage(humanPrompt);
       const botResponse = result.response.text();
 
-      const chunkSize = 1500;
-      let chunks = [];
-      let currentChunk = "";
-
-      const lines = botResponse.split("\n");
-
-      for (const line of lines) {
-        if (currentChunk.length + line.length > chunkSize) {
-          chunks.push(currentChunk);
-          currentChunk = line;
-        } else {
-          currentChunk += (currentChunk ? "\n" : "") + line;
-        }
-      }
-
-      if (currentChunk) {
-        chunks.push(currentChunk);
-      }
+      const chunks = chunkText(botResponse);
 
       for (const chunk of chunks) {
         await message.reply(chunk);
@@ -3021,7 +2987,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-//Functions
+//General Functions
 
 //Information/Management Functions
 
@@ -3043,6 +3009,28 @@ async function resolveUser(query, message) {
   }
 
   return null;
+}
+
+function chunkText(text, chunkSize = 2000) {
+  const chunks = [];
+  let currentChunk = "";
+
+  const lines = text.split("\n");
+
+  for (const line of lines) {
+    if (currentChunk.length + line.length > chunkSize) {
+      chunks.push(currentChunk);
+      currentChunk = line;
+    } else {
+      currentChunk += (currentChunk ? "\n" : "") + line;
+    }
+  }
+
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+
+  return chunks;
 }
 
 //Entertainment Functions

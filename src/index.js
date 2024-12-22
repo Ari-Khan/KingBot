@@ -101,7 +101,22 @@ const gemini20Flash = genAI.getGenerativeModel({
     temperature: 1.25,
   },
 });
-const gemini15Pro = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+const gemini15Pro = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-pro-latest",
+  safetySettings: safetySettings,
+  generationConfig: {
+    maxOutputTokens: 8192,
+    temperature: 1.25,
+  },
+});
+const gemini20FlashThinking = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash-thinking-exp",
+  safetySettings: safetySettings,
+  generationConfig: {
+    maxOutputTokens: 8192,
+    temperature: 1.25,
+  },
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const ollama = new Ollama({ baseURL: "http://localhost:11434/api/generate" });
@@ -1802,7 +1817,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$gemini (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$gemini (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -2264,6 +2279,53 @@ client.on('messageCreate', async (message) => {
     } catch (error) {
       console.error('Failed to generate or download the image:', error);
       message.reply('Failed to generate or download the image.');
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$think")) {
+    const prompt = message.content.slice("$think".length).trim();
+
+    if (!prompt) {
+      message.reply("Please use `$think (prompt)` to send Gemini Think a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return;
+    }
+
+    try {
+      const result = await gemini20FlashThinking.generateContent(prompt);
+      const response = result.response;
+      
+      const thoughtProcess = response.candidates[0].content.parts[0].text;
+
+      const chunkSize = 2000;
+      let chunks = [];
+      let currentChunk = "";
+
+      const lines = thoughtProcess.split("\n");
+
+      for (const line of lines) {
+        if (currentChunk.length + line.length > chunkSize) {
+          chunks.push(currentChunk);
+          currentChunk = line;
+        } else {
+          currentChunk += (currentChunk ? "\n" : "") + line;
+        }
+      }
+
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+
+      for (const chunk of chunks) {
+        await message.reply(chunk);
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      message.reply(
+        "KingBot Gemini 2.0 Flash Thinking is currently offline, has reached its maximum requests per minute, or an error has occurred."
+      );
     }
   }
 });

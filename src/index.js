@@ -3102,6 +3102,15 @@ async function checkSelfNetWorth(message) {
       }
     }
 
+    const kgbPrice = await fetchStockPrice("KGB");
+    if (kgbPrice !== null) {
+      const kgbValue = kgbPrice * user.stocks.filter(stock => stock.symbol === "KGB").reduce((acc, stock) => acc + stock.amount, 0);
+      if (!totalNetWorth["USD"]) {
+        totalNetWorth["USD"] = 0;
+      }
+      totalNetWorth["USD"] += kgbValue;
+    }
+
     let netWorthMessage = `Your current net worth is `;
 
     netWorthMessage += `${(totalNetWorth["USD"] || 0).toFixed(2)} USD`;
@@ -3147,6 +3156,15 @@ async function checkUserNetWorth(userId, message) {
           totalNetWorth[stockCurrency] += stockValue;
         }
       }
+    }
+
+    const kgbPrice = await fetchStockPrice("KGB");
+    if (kgbPrice !== null) {
+      const kgbValue = kgbPrice * user.stocks.filter(stock => stock.symbol === "KGB").reduce((acc, stock) => acc + stock.amount, 0);
+      if (!totalNetWorth["USD"]) {
+        totalNetWorth["USD"] = 0;
+      }
+      totalNetWorth["USD"] += kgbValue;
     }
 
     let netWorthMessage = `<@${userId}> has a net worth of `;

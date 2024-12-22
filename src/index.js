@@ -3151,30 +3151,40 @@ async function checkUserNetWorth(userId, message) {
 
     let totalNetWorth = { USD: user.balance };
 
-    if (user.stocks && user.stocks.length > 0) {
-      for (const stock of user.stocks) {
-        const currentPrice = await fetchStockPrice(stock.symbol);
-        const stockCurrency = await fetchStockCurrency(stock.symbol);
+    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
+    const otherStocks = user.stocks.filter(stock => stock.symbol !== "KGB");
 
-        if (currentPrice !== null) {
-          const stockValue = currentPrice * stock.amount;
+    for (const stock of otherStocks) {
+      const currentPrice = await fetchStockPrice(stock.symbol);
+      const stockCurrency = await fetchStockCurrency(stock.symbol);
 
-          if (!totalNetWorth[stockCurrency]) {
-            totalNetWorth[stockCurrency] = 0;
-          }
+      if (currentPrice !== null && currentPrice !== undefined) {
+        const stockValue = currentPrice * stock.amount;
 
-          totalNetWorth[stockCurrency] += stockValue;
+        if (!totalNetWorth[stockCurrency]) {
+          totalNetWorth[stockCurrency] = 0;
         }
+
+        totalNetWorth[stockCurrency] += stockValue;
+      } else {
+        console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
       }
     }
 
-    const kgbPrice = await fetchStockPrice("KGB");
-    if (kgbPrice !== null) {
-      const kgbValue = kgbPrice * user.stocks.filter(stock => stock.symbol === "KGB").reduce((acc, stock) => acc + stock.amount, 0);
-      if (!totalNetWorth["USD"]) {
-        totalNetWorth["USD"] = 0;
+    if (kgbStock) {
+      const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
+
+      if (kgbData) {
+        const kgbValue = kgbData.price * kgbStock.amount;
+
+        if (!totalNetWorth[kgbData.currency]) {
+          totalNetWorth[kgbData.currency] = 0;
+        }
+
+        totalNetWorth[kgbData.currency] += kgbValue;
+      } else {
+        console.warn("KGB stock is unavailable or invalid.");
       }
-      totalNetWorth["USD"] += kgbValue;
     }
 
     let netWorthMessage = `<@${userId}> has a net worth of `;

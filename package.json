@@ -27,6 +27,6 @@
     "npm": "^11.0.0",
     "ollama": "^0.5.11",
     "openai": "^4.77.0",
-    "yahoo-finance2": "^2.13.2"
+    "yahoo-finance2": "^2.13.3"
   }
 }

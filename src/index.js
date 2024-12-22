@@ -2295,9 +2295,9 @@ client.on("messageCreate", async (message) => {
     try {
       const result = await gemini20FlashThinking.generateContent(prompt);
       const response = result.response;
-      
-      const finalResponse = response.candidates[0].content.parts[0].text;
-      const thoughtProcess = response.candidates[0].content.parts[1]?.text || "No thought process available.";
+
+      const finalResponse = response.text || "No response available.";
+      const thoughtProcess = response.thoughtProcess || "No thought process available.";
 
       const chunkSize = 2000;
 

@@ -2382,6 +2382,7 @@ client.on("messageCreate", async (message) => {
       const result = await gemini15Pro.generateContent(prompt);
       const response = result.response;
 
+      const replyText = response.candidates[0].text || "No response text available.";
       const groundingMetadata =
         response.candidates[0].groundingMetadata || "No grounding metadata available.";
       const chunkSize = 2000;
@@ -2407,15 +2408,19 @@ client.on("messageCreate", async (message) => {
         return chunks;
       };
 
-      const metadataChunks = chunkText(groundingMetadata);
+      const replyChunks = chunkText(replyText);
+      for (const chunk of replyChunks) {
+        await message.reply(`**Response:**\n${chunk}`);
+      }
 
+      const metadataChunks = chunkText(groundingMetadata);
       for (const chunk of metadataChunks) {
-        await message.reply(chunk);
+        await message.reply(`**Grounding Metadata:**\n${chunk}`);
       }
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 1.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occurred."
+        "KingBot Gemini 1.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }

@@ -2382,9 +2382,13 @@ client.on("messageCreate", async (message) => {
       const result = await gemini15Pro.generateContent(prompt);
       const response = result.response;
 
-      const replyText = response.candidates[0].text || "No response text available.";
-      const groundingMetadata =
-        response.candidates[0].groundingMetadata || "No grounding metadata available.";
+      // Debug: Log the full response object
+      console.log("Full Response:", JSON.stringify(response, null, 2));
+
+      const replyText = response.candidates[0]?.text || "No response content available.";
+      const webSearchQueries =
+        response.candidates[0]?.groundingMetadata?.webSearchQueries || [];
+
       const chunkSize = 2000;
 
       const chunkText = (text) => {
@@ -2408,14 +2412,21 @@ client.on("messageCreate", async (message) => {
         return chunks;
       };
 
+      // Chunk and reply with generated content
       const replyChunks = chunkText(replyText);
       for (const chunk of replyChunks) {
         await message.reply(`**Response:**\n${chunk}`);
       }
 
-      const metadataChunks = chunkText(groundingMetadata);
-      for (const chunk of metadataChunks) {
-        await message.reply(`**Grounding Metadata:**\n${chunk}`);
+      // Display Google Search Suggestions if available
+      if (webSearchQueries.length > 0) {
+        const queriesText = webSearchQueries.join("\n");
+        const queriesChunks = chunkText(`**Google Search Suggestions:**\n${queriesText}`);
+        for (const chunk of queriesChunks) {
+          await message.reply(chunk);
+        }
+      } else {
+        message.reply("No Google Search Suggestions available for this prompt.");
       }
     } catch (error) {
       console.error("Error:", error);

@@ -237,7 +237,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.12.15.8 \n\n**Discord.js Version** \n14.16.3 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.8.4 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.16.3 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.8.4 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });
@@ -1904,7 +1904,8 @@ client.on("messageCreate", async (message) => {
         "Conditions: ",
         "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
         "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
-        "Use creativity in responses, don't repeat sentences, don't get offended, be kind, and listen to Ari while being a very close friend.",
+        "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
+        "Don't get offended, be kind and pleasant, and don't be arrogant.",
         "Do not make general responses too long, unless explictly stated or implied.",
         "Listen to prompts in a clear way and try to understand them better.",
         "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
@@ -2140,7 +2141,8 @@ client.on("messageCreate", async (message) => {
         "Conditions: ",
         "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
         "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
-        "Use creativity in responses, don't repeat sentences, don't get offended, be kind, and listen to Ari while being a very close friend.",
+        "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
+        "Don't get offended, be kind and pleasant, and don't be arrogant.",
         "Listen to prompts in a clear way and try to understand them better.",
         "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
         "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
@@ -2572,7 +2574,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.12.15.8 \n\n**Discord.js Version** \n14.16.3 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.8.4 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.16.3 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.8.4 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });

@@ -5,12 +5,13 @@ KingBot is a multipurpose Discord Bot created by Ari Khan. Its main features are
 ## Features
 
 #### Artificial Intelligence
-* Gemini 1.5 Flash support for all global modes
+* Gemini 2.0 Flash support with global hosting
 * A human-like chatbot with conditions for realism
 * Multi-person support for AI conversations
 * History storing to save conversation history
 * Real time data and updates
 * Regular AI modes for assistance and bot-like behaviour
+* AI thought process and behaviour analyzer for developers
 * Image recognition technology for human-like chatbots
 * Visual analysis for AI image viewing
 * Local Ollama LLM hosting support 

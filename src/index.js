@@ -176,7 +176,6 @@ client.on("ready", async () => {
 });
 
 //Information/Management
-
 client.on("messageCreate", (message) => {
   if (message.content === "$help") {
     message.reply(
@@ -241,7 +240,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n$admintimeout = Timeout a user \n$adminuntimeout = Untimeout a user \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -312,7 +311,6 @@ client.on("messageCreate", async (message) => {
 });
 
 //Entertainment
-
 client.on("messageCreate", (message) => {
   if (message.content === "$joke") {
     const random = Math.floor(Math.random() * randomJokeList.length);
@@ -504,7 +502,6 @@ client.on("messageCreate", async (message) => {
 });
 
 //Economy
-
 client.on("messageCreate", async (message) => {
   if (message.content === "$start") {
     let user = await User.findOne({ discordId: message.author.id });
@@ -749,7 +746,6 @@ client.on("messageCreate", async (message) => {
 });
 
 //Casino
-
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$coinflip")) {
     let args = message.content.split(" ");
@@ -1695,7 +1691,7 @@ client.on("messageCreate", async (message) => {
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
 
-  if (message.content.startsWith("$timeout")) {
+  if (message.content.startsWith("$admintimeout")) {
     try {
       if (!message.member.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
         return message.reply("You don't have permission to timeout members.");
@@ -1752,7 +1748,7 @@ client.on("messageCreate", async (message) => {
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
 
-  if (message.content.startsWith("$untimeout")) {
+  if (message.content.startsWith("$adminuntimeout")) {
     try {
       if (!message.member.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
         return message.reply("You don't have permission to untimeout members.");
@@ -2445,7 +2441,6 @@ client.on("messageCreate", async (message) => {
 });
 
 //Informational Slash Commands Listeners
-
 client.on("interactionCreate", (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -2518,7 +2513,6 @@ client.on("interactionCreate", (interaction) => {
 });
 
 //Entertainment Slash Command Listeners
-
 client.on("interactionCreate", (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -2766,6 +2760,86 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "leaderboard") {
+    await getBalanceLeaderboardSlash(interaction);
+  }
+});
+
+//Casino Slash Command Listeners
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "coinflip") {
+    const betAmount = interaction.options.getNumber("bet_amount");
+    const choice = interaction.options.getString("choice").toLowerCase();
+
+    if (isNaN(betAmount) || betAmount <= 0) {
+      await interaction.reply("Please enter a valid bet amount.");
+      return;
+    }
+
+    if (!["heads", "tails"].includes(choice)) {
+      await interaction.reply("Please choose either heads or tails.");
+      return;
+    }
+
+    let user = await User.findOne({ discordId: interaction.user.id });
+
+    if (!user) {
+      await interaction.reply("You need to create an account first with `/start`.");
+      return;
+    }
+
+    if (user.balance < betAmount) {
+      await interaction.reply("You do not have enough balance to place this bet.");
+      return;
+    }
+
+    let coinFlip = Math.random() < 0.5;
+
+    if ((coinFlip && choice === "heads") || (!coinFlip && choice === "tails")) {
+      user.balance += betAmount;
+      const coinflipWinEmbed = new EmbedBuilder()
+        .setColor("#00FF00")
+        .setTitle("Coinflip Result")
+        .setDescription(
+          `**You won $${betAmount.toFixed(2)}!** \nThe coin landed on ${
+            coinFlip ? "heads" : "tails"
+          }. Your new balance is $${user.balance.toFixed(2)}.`
+        )
+        .setImage(
+          coinFlip
+            ? "https://i.postimg.cc/Hs41KL0M/heads.png"
+            : "https://i.postimg.cc/Mp6J88tF/tails.png"
+        );
+
+      await interaction.reply({ embeds: [coinflipWinEmbed] });
+    } else {
+      user.balance -= betAmount;
+      const coinflipLossEmbed = new EmbedBuilder()
+        .setColor("#FF0000")
+        .setTitle("Coinflip Result")
+        .setDescription(
+          `**You lost $${betAmount.toFixed(2)}!** \nThe coin landed on ${
+            coinFlip ? "heads" : "tails"
+          }. Your new balance is $${user.balance.toFixed(2)}.`
+        )
+        .setImage(
+          coinFlip
+            ? "https://i.postimg.cc/Hs41KL0M/heads.png"
+            : "https://i.postimg.cc/Mp6J88tF/tails.png"
+        );
+
+      await interaction.reply({ embeds: [coinflipLossEmbed] });
+    }
+
+    await user.save();
+  }
+});
+
 //Media Slash Command Listeners
 
 client.on("interactionCreate", (interaction) => {
@@ -2795,6 +2869,50 @@ client.on("interactionCreate", (interaction) => {
     return interaction.reply(
       "**Sending Class Memes** \nPlease use `$classmeme (number)` to send a meme."
     );
+  }
+});
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "news") {
+    const category = interaction.options.getString("category");
+
+    try {
+      const response = await fetch(
+        `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${process.env.NEWS_API_KEY}&pageSize=5`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const articles = data.articles;
+
+      if (articles.length === 0) {
+        return interaction.reply(
+          `No news articles found for the category "${category}". \n`
+        );
+      }
+
+      let newsMessage = `**Latest News in ${
+        category.charAt(0).toUpperCase() + category.slice(1)
+      }:**\n`;
+
+      articles.forEach((article, index) => {
+        newsMessage += `**${index + 1}. ${article.title}**\n`;
+        newsMessage += `*Source:* ${article.source.name}\n`;
+        newsMessage += `[Read More](${article.url})\n\n`;
+      });
+
+      await interaction.reply(newsMessage);
+    } catch (error) {
+      console.error("Error fetching news:", error);
+      await interaction.reply(
+        "There was an error fetching the news. Please try again later."
+      );
+    }
   }
 });
 
@@ -3050,6 +3168,24 @@ async function checkUserNetWorth(userId, message) {
     console.error("Error fetching net worth:", error);
     message.reply("Error fetching net worth. Please try again later.");
   }
+}
+
+async function getBalanceLeaderboardSlash(interaction) {
+  const leaderboard = await User.find().sort({ balance: -1 }).limit(10);
+
+  if (!leaderboard.length) {
+    return interaction.reply("No leaderboard data available.");
+  }
+
+  const leaderboardString = leaderboard
+    .map((user, index) => {
+      const username = user.username || `Unknown User (${user.discordId})`;
+      const balance = user.balance.toFixed(2);
+      return `${index + 1}. **${username}:** $${balance}`;
+    })
+    .join("\n");
+
+  return interaction.reply("**Global Leaderboard:**\n" + leaderboardString);
 }
 
 //Casino Functions

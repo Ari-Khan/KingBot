@@ -142,6 +142,57 @@ const commands = [
       },
     ],
   },
+
+  {
+    name: "leaderboard",
+    description: "Displays the global balance leaderboard",
+  },
+
+  {
+    name: "coinflip",
+    description: "Flip a coin and place a bet on heads or tails.",
+    options: [
+      {
+        name: "bet_amount",
+        description: "The amount to bet on the coin flip.",
+        type: 10,
+        required: true,
+      },
+      {
+        name: "choice",
+        description: "Choose either heads or tails.",
+        type: 3,
+        required: true,
+        choices: [
+          { name: "Heads", value: "heads" },
+          { name: "Tails", value: "tails" },
+        ],
+      },
+    ],
+  },
+
+  {
+    name: "news",
+    description: "Get the latest news for a specific category.",
+    options: [
+      {
+        name: "category",
+        description: "The news category to fetch (General, Business, etc.).",
+        type: 3,
+        required: true,
+        choices: [
+          { name: "General", value: "general" },
+          { name: "Latest", value: "latest" },
+          { name: "Business", value: "business" },
+          { name: "Entertainment", value: "entertainment" },
+          { name: "Health", value: "health" },
+          { name: "Science", value: "science" },
+          { name: "Sports", value: "sports" },
+          { name: "Technology", value: "technology" },
+        ],
+      },
+    ],
+  },
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);

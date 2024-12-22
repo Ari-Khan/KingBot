@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { DynamicRetrievalMode } from "@google/generative-ai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { OpenAI } from "openai";
@@ -117,6 +118,27 @@ const gemini20FlashThinking = genAI.getGenerativeModel({
     temperature: 1.25,
   },
 });
+const gemini15Grounding = genAI.getGenerativeModel(
+  { 
+    model: "gemini-1.5-flash-latest",
+    safetySettings: safetySettings,
+    generationConfig: {
+      maxOutputTokens: 8192,
+      temperature: 1.25,
+    },
+    tools: [
+      {
+        googleSearchRetrieval: {
+          dynamicRetrievalConfig: {
+          mode: DynamicRetrievalMode.MODE_DYNAMIC,
+          dynamicThreshold: 0.7,
+          },
+        },
+      },
+    ],
+  },
+  { apiVersion: "v1beta" },
+);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const ollama = new Ollama({ baseURL: "http://localhost:11434/api/generate" });
@@ -1817,7 +1839,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$gemini (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$gemini (prompt)` to send Gemini 2.0 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -2290,7 +2312,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$think".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$think (prompt)` to send Gemini Think a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$think (prompt)` to send Gemini 2.0 Flash Think a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -2345,6 +2367,60 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$google")) {
+    const prompt = message.content.slice("$google".length).trim();
+
+    if (!prompt) {
+      message.reply(
+        "Please use `$google (prompt)` to send Gemini 1.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+      );
+      return;
+    }
+
+    try {
+      const result = await gemini15Pro.generateContent(prompt);
+      const response = result.response;
+
+      const groundingMetadata =
+        response.candidates[0].groundingMetadata || "No grounding metadata available.";
+      const chunkSize = 2000;
+
+      const chunkText = (text) => {
+        let chunks = [];
+        let currentChunk = "";
+        const lines = text.split("\n");
+
+        for (const line of lines) {
+          if (currentChunk.length + line.length > chunkSize) {
+            chunks.push(currentChunk);
+            currentChunk = line;
+          } else {
+            currentChunk += (currentChunk ? "\n" : "") + line;
+          }
+        }
+
+        if (currentChunk) {
+          chunks.push(currentChunk);
+        }
+
+        return chunks;
+      };
+
+      const metadataChunks = chunkText(groundingMetadata);
+
+      for (const chunk of metadataChunks) {
+        await message.reply(chunk);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      message.reply(
+        "KingBot Gemini 1.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occurred."
+      );
+    }
+  }
+});
+
 //Admin Artificial Intelligence
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$adminchatgpt")) {
@@ -2386,7 +2462,7 @@ client.on("messageCreate", async (message) => {
 
     if (!prompt) {
       message.reply(
-        "Please use `$admingeminipro (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+        "Please use `$admingeminipro (prompt)` to send Gemini 1.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
       );
       return;
     }

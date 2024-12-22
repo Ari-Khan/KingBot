@@ -3654,54 +3654,73 @@ async function checkBalanceSlash(userId, interaction) {
   }
 }
 
-async function checkSelfNetWorthSlash(interaction) { 
-  await interaction.deferReply(); 
+async function checkSelfNetWorthSlash(interaction) {
+  await interaction.deferReply();
 
-  const userId = interaction.user.id; 
+  const userId = interaction.user.id;
 
-  try { 
-    const user = await User.findOne({ discordId: userId }); 
+  try {
+    const user = await User.findOne({ discordId: userId });
 
-    if (!user) { 
-      await interaction.editReply("You need to create an account first with `$start`."); 
-      return; 
-    } 
+    if (!user) {
+      await interaction.editReply("You need to create an account first with `$start`.");
+      return;
+    }
 
-    let totalNetWorth = { USD: user.balance }; 
+    let totalNetWorth = { USD: user.balance };
 
-    if (user.stocks && user.stocks.length > 0) { 
-      for (const stock of user.stocks) { 
-        const currentPrice = await fetchStockPrice(stock.symbol); 
-        const stockCurrency = await fetchStockCurrency(stock.symbol); 
+    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
+    const otherStocks = user.stocks.filter(stock => stock.symbol !== "KGB");
 
-        if (currentPrice !== null) { 
-          const stockValue = currentPrice * stock.amount; 
+    for (const stock of otherStocks) {
+      const currentPrice = await fetchStockPrice(stock.symbol);
+      const stockCurrency = await fetchStockCurrency(stock.symbol);
 
-          if (!totalNetWorth[stockCurrency]) { 
-            totalNetWorth[stockCurrency] = 0; 
-          } 
+      if (currentPrice !== null && currentPrice !== undefined) {
+        const stockValue = currentPrice * stock.amount;
 
-          totalNetWorth[stockCurrency] += stockValue; 
-        } 
-      } 
-    } 
+        if (!totalNetWorth[stockCurrency]) {
+          totalNetWorth[stockCurrency] = 0;
+        }
 
-    let netWorthMessage = `Your current net worth is ${(totalNetWorth["USD"] || 0).toFixed(2)} USD`; 
+        totalNetWorth[stockCurrency] += stockValue;
+      } else {
+        console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
+      }
+    }
 
-    for (const currency in totalNetWorth) { 
-      if (currency !== "USD") { 
-        netWorthMessage += ` + ${(totalNetWorth[currency] || 0).toFixed(2)} ${currency}`; 
-      } 
-    } 
+    if (kgbStock) {
+      const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
 
-    netWorthMessage += "."; 
+      if (kgbData) {
+        const kgbValue = kgbData.price * kgbStock.amount;
 
-    await interaction.editReply(netWorthMessage); 
-  } catch (error) { 
-    console.error("Error fetching net worth:", error); 
-    await interaction.editReply("Error fetching net worth. Please try again later."); 
-  } 
-} 
+        if (!totalNetWorth[kgbData.currency]) {
+          totalNetWorth[kgbData.currency] = 0;
+        }
+
+        totalNetWorth[kgbData.currency] += kgbValue;
+      } else {
+        console.warn("KGB stock is unavailable or invalid.");
+      }
+    }
+
+    let netWorthMessage = `Your current net worth is ${(totalNetWorth["USD"] || 0).toFixed(2)} USD`;
+
+    for (const currency in totalNetWorth) {
+      if (currency !== "USD") {
+        netWorthMessage += ` + ${(totalNetWorth[currency] || 0).toFixed(2)} ${currency}`;
+      }
+    }
+
+    netWorthMessage += ".";
+
+    await interaction.editReply(netWorthMessage);
+  } catch (error) {
+    console.error("Error fetching net worth:", error);
+    await interaction.editReply("Error fetching net worth. Please try again later.");
+  }
+}
 
 async function checkUserNetWorthSlash(userId, interaction) {
   try {
@@ -3714,24 +3733,43 @@ async function checkUserNetWorthSlash(userId, interaction) {
 
     let totalNetWorth = { USD: user.balance };
 
-    if (user.stocks && user.stocks.length > 0) {
-      for (const stock of user.stocks) {
-        const currentPrice = await fetchStockPrice(stock.symbol);
-        const stockCurrency = await fetchStockCurrency(stock.symbol);
+    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
+    const otherStocks = user.stocks.filter(stock => stock.symbol !== "KGB");
 
-        if (currentPrice !== null) {
-          const stockValue = currentPrice * stock.amount;
+    for (const stock of otherStocks) {
+      const currentPrice = await fetchStockPrice(stock.symbol);
+      const stockCurrency = await fetchStockCurrency(stock.symbol);
 
-          if (!totalNetWorth[stockCurrency]) {
-            totalNetWorth[stockCurrency] = 0;
-          }
+      if (currentPrice !== null && currentPrice !== undefined) {
+        const stockValue = currentPrice * stock.amount;
 
-          totalNetWorth[stockCurrency] += stockValue;
+        if (!totalNetWorth[stockCurrency]) {
+          totalNetWorth[stockCurrency] = 0;
         }
+
+        totalNetWorth[stockCurrency] += stockValue;
+      } else {
+        console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
       }
     }
 
-    let netWorthMessage = `<@${userId}> has a net worth of $${(totalNetWorth["USD"] || 0).toFixed(2)} USD`;
+    if (kgbStock) {
+      const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
+
+      if (kgbData) {
+        const kgbValue = kgbData.price * kgbStock.amount;
+
+        if (!totalNetWorth[kgbData.currency]) {
+          totalNetWorth[kgbData.currency] = 0;
+        }
+
+        totalNetWorth[kgbData.currency] += kgbValue;
+      } else {
+        console.warn("KGB stock is unavailable or invalid.");
+      }
+    }
+
+    let netWorthMessage = `<@${userId}> has a net worth of ${(totalNetWorth["USD"] || 0).toFixed(2)} USD`;
 
     for (const currency in totalNetWorth) {
       if (currency !== "USD") {

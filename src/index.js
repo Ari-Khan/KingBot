@@ -3090,7 +3090,7 @@ async function checkSelfNetWorth(message) {
         const currentPrice = await fetchStockPrice(stock.symbol);
         const stockCurrency = await fetchStockCurrency(stock.symbol);
 
-        if (currentPrice !== null) {
+        if (currentPrice !== null && currentPrice !== undefined) {
           const stockValue = currentPrice * stock.amount;
 
           if (!totalNetWorth[stockCurrency]) {
@@ -3098,17 +3098,25 @@ async function checkSelfNetWorth(message) {
           }
 
           totalNetWorth[stockCurrency] += stockValue;
+        } else {
+          console.warn(`Skipping invalid or unavailable stock symbol: ${stock.symbol}`);
         }
       }
     }
 
-    const kgbPrice = await fetchStockPrice("KGB");
-    if (kgbPrice !== null) {
-      const kgbValue = kgbPrice * user.stocks.filter(stock => stock.symbol === "KGB").reduce((acc, stock) => acc + stock.amount, 0);
-      if (!totalNetWorth["USD"]) {
-        totalNetWorth["USD"] = 0;
+    const kgbStock = user.stocks.find(stock => stock.symbol === "KGB");
+    if (kgbStock) {
+      const kgbPrice = await fetchStockPrice("KGB");
+
+      if (kgbPrice !== null && kgbPrice !== undefined) {
+        const kgbValue = kgbPrice * kgbStock.amount;
+        if (!totalNetWorth["USD"]) {
+          totalNetWorth["USD"] = 0;
+        }
+        totalNetWorth["USD"] += kgbValue;
+      } else {
+        console.warn("KGB stock is unavailable or invalid.");
       }
-      totalNetWorth["USD"] += kgbValue;
     }
 
     let netWorthMessage = `Your current net worth is `;

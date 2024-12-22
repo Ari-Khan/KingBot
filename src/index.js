@@ -2304,7 +2304,7 @@ client.on("messageCreate", async (message) => {
       const chunkText = (text) => {
         let chunks = [];
         let currentChunk = "";
-        const lines = text.split("\n");
+        const lines = text.toString().split("\n");
 
         for (const line of lines) {
           if (currentChunk.length + line.length > chunkSize) {

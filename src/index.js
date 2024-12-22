@@ -93,7 +93,7 @@ const safetySettings = [
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const fileManager = new GoogleAIFileManager(process.env.GOOGLE_API_KEY);
-const gemini15Flash = genAI.getGenerativeModel({
+const gemini20Flash = genAI.getGenerativeModel({
   model: "gemini-2.0-flash-exp",
   safetySettings: safetySettings,
   generationConfig: {
@@ -179,7 +179,7 @@ client.on("ready", async () => {
 client.on("messageCreate", (message) => {
   if (message.content === "$help") {
     message.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -1807,7 +1807,7 @@ client.on("messageCreate", async (message) => {
     }
 
     try {
-      const result = await gemini15Flash.generateContent(prompt);
+      const result = await gemini20Flash.generateContent(prompt);
       const response = result.response;
       const text = response.text();
 
@@ -1836,19 +1836,19 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 1.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.0 Flash is currently offline, has reached its maximum requests per minute, or an error has occured."
       );
     }
   }
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$human")) {
-    const prompt = message.content.slice("$human".length).trim();
+  if (message.content.startsWith("$chat")) {
+    const prompt = message.content.slice("$chat".length).trim();
 
     if (!prompt) {
       message.reply(
-        "Please use $human (prompt) to send Gemini Human a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+        "Please use $chat (prompt) to interact with Gemini Chat. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
       );
       return;
     }
@@ -1920,7 +1920,7 @@ client.on("messageCreate", async (message) => {
         parts: [{ text: prompt }],
       });
 
-      const chat = gemini15Flash.startChat({
+      const chat = gemini20Flash.startChat({
         history: history,
       });
 
@@ -1971,7 +1971,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 1.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+        "KingBot Gemini 2.0 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }
@@ -2043,7 +2043,7 @@ client.on("messageCreate", async (message) => {
         },
       }];
 
-      const result = await gemini15Flash.generateContent(input);
+      const result = await gemini20Flash.generateContent(input);
       const responseText = result.response.text();
 
       const chunkSize = 2000;
@@ -2165,7 +2165,7 @@ client.on("messageCreate", async (message) => {
         },
       ];
 
-      const result = await gemini15Flash.generateContent(input);
+      const result = await gemini20Flash.generateContent(input);
       const responseText = result.response.text();
 
       await ChatHistory.create({
@@ -2446,7 +2446,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "help") {
     return interaction.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -3789,6 +3789,14 @@ async function handlePaySlash(interaction) {
 }
 
 //Temporary
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$human")) {
+    message.reply(
+      "The `$human` command has been relocated to `$chat`. Please use `$chat (prompt)` to interact with Gemini Chat."
+    );
+  }
+});
+
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$adminstartping")) {

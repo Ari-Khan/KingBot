@@ -73,7 +73,6 @@ import {
   raceWordBank,
   testWordBank,
   values,
-  election
 } from "./constants.js";
 import ChatHistory from "./schemas/chat-history.js";
 import Count from "./schemas/count.js";
@@ -181,7 +180,7 @@ client.on("ready", async () => {
 client.on("messageCreate", (message) => {
   if (message.content === "$help") {
     message.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze and image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -234,6 +233,81 @@ client.on("messageCreate", (message) => {
     message.reply(
       "**Top.gg:** \nhttps://top.gg/bot/1168240045510107308 \n**GitHub Repository:** \nhttps://github.com/Proking4444/KingBot \n**Website:** \nhttps://www.ari-khan.com"
     );
+  }
+});
+
+//Admin Information/Management
+client.on("messageCreate", (message) => {
+  if (message.content === "$adminhelp") {
+    if (message.author.id === "786745378212282368") {
+      message.reply(
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+      );
+    } else {
+      message.reply("You are not authorized to use this command.");
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content === "$adminfixfields" && message.author.id === "786745378212282368") {
+    try {
+      const users = await User.find();
+
+      for (const user of users) {
+        let updated = false;
+
+        if (user.username === undefined) {
+          try {
+            const discordUser = await client.users.fetch(user.discordId);
+            user.username = discordUser.username;
+            updated = true;
+          } catch (err) {
+            console.error(`Could not fetch user ${user.discordId}:`, err);
+            continue;
+          }
+        }
+
+        if (user.balance === undefined) {
+          user.balance = 0;
+          updated = true;
+        }
+        if (user.lastDailyCollected === undefined) {
+          user.lastDailyCollected = null;
+          updated = true;
+        }
+        if (user.lastClaimCollected === undefined) {
+          user.lastClaimCollected = null;
+          updated = true;
+        }
+        if (user.lastVoteTimestamp === undefined) {
+          user.lastVoteTimestamp = null;
+          updated = true;
+        }
+        if (user.currencies === undefined) {
+          user.currencies = {};
+          updated = true;
+        }
+        if (user.name === undefined) {
+          user.name = null;
+          updated = true;
+        }
+        if (user.stocks === undefined) {
+          user.stocks = [];
+          updated = true;
+        }
+
+        if (updated) {
+          await user.save();
+          console.log(`Fixed missing fields for user ${user.discordId}`);
+        }
+      }
+
+      message.reply("All missing fields have been fixed for user documents.");
+    } catch (error) {
+      console.error("Error fixing fields:", error);
+      message.reply("There was an error fixing fields. Please try again later.");
+    }
   }
 });
 
@@ -626,6 +700,51 @@ client.on("messageCreate", async (message) => {
         message.reply("That user was not found.");
       }
     }
+  }
+});
+
+//Admin Economy
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminpay")) {
+    const adminId = '786745378212282368';
+
+    if (message.author.id !== adminId) {
+      message.reply("You do not have permission to use this command.");
+      return;
+    }
+
+    const args = message.content.split(" ").slice(1);
+
+    if (args.length !== 2) {
+      message.reply("Please use `$adminpay (user) (amount)` to transfer funds.");
+      return;
+    }
+
+    const targetUserId = await resolveUser(args[0], message);
+    const payAmount = parseInt(args[1]);
+
+    if (!targetUserId) {
+      message.reply("Please enter a valid recipient.");
+      return;
+    }
+
+    if (isNaN(payAmount) || payAmount <= 0) {
+      message.reply("Please enter a valid transfer amount.");
+      return;
+    }
+
+    const recipient = await User.findOne({ discordId: targetUserId });
+
+    if (!recipient) {
+      message.reply("The recipient has not created an account yet.");
+      return;
+    }
+
+    recipient.balance += payAmount;
+
+    await recipient.save();
+
+    message.reply(`Successfully transferred $${payAmount} to <@${targetUserId}>.`);
   }
 });
 
@@ -1394,8 +1513,9 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+//Admin Stocks
 client.on("messageCreate", async (message) => {
-  if (message.content.trim().toLowerCase() === "$kingbotstocksplitdevtool") {
+  if (message.content.trim().toLowerCase() === "$adminkgbstocksplit") {
     if (message.author.id !== "786745378212282368") {
       return message.reply("You are not authorized to use this command.");
     }
@@ -1682,35 +1802,6 @@ client.on("messageCreate", async (message) => {
 
 //Artificial Intelligence
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$chatgptdevtool")) {
-    const prompt = message.content.slice(9).trim();
-
-    if (!prompt) {
-      message.reply("Please use `$chatgpt (prompt)` to send ChatGPT a prompt.");
-      return;
-    }
-
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-0125",
-        max_tokens: 100,
-        messages: [
-          { role: "system", content: "Chat GPT is an AI Chatbot." },
-          { role: "user", content: prompt },
-        ],
-      });
-
-      message.reply(response.choices[0].message.content);
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot ChatGPT is currently offline, has reached its token limit,or an error has occured."
-      );
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$gemini")) {
     const prompt = message.content.slice("$gemini".length).trim();
 
@@ -1885,108 +1976,6 @@ client.on("messageCreate", async (message) => {
       console.error("Error:", error);
       message.reply(
         "KingBot Gemini 1.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
-      );
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$progemini")) {
-    const prompt = message.content.slice("$progemini".length).trim();
-
-    if (!message.author.id === "786745378212282368") {
-      message.reply("You are not authorized to use this command.");
-      return;
-    }
-
-    if (!prompt) {
-      message.reply(
-        "Please use `$progemini (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
-      );
-      return;
-    }
-
-    try {
-      const result = await gemini15Pro.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
-
-      const chunkSize = 2000;
-      let chunks = [];
-      let currentChunk = "";
-
-      const lines = text.split("\n");
-
-      for (const line of lines) {
-        if (currentChunk.length + line.length > chunkSize) {
-          chunks.push(currentChunk);
-          currentChunk = line;
-        } else {
-          currentChunk += (currentChunk ? "\n" : "") + line;
-        }
-      }
-
-      if (currentChunk) {
-        chunks.push(currentChunk);
-      }
-
-      for (const chunk of chunks) {
-        await message.reply(chunk);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot Gemini 1.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
-      );
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$llama")) {
-    const query = message.content.slice(6).trim();
-
-    if (!query) {
-      message.reply("Please provide a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
-      return;
-    }
-
-    try {
-      const response = await ollama.chat({
-        model: "llama3:8b",
-        messages: [{ role: "user", content: query, options: { num_ctx: 100 } }],
-      });
-
-      message.reply(response.message.content);
-    } catch (error) {
-      console.error("Error with Ollama API:", error);
-      message.reply(
-        "KingBot LLaMa is currently offline, or an error has occured."
-      );
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$zephyr")) {
-    const query = message.content.slice(7).trim();
-
-    if (!query) {
-      message.reply("Please provide a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
-      return;
-    }
-
-    try {
-      const response = await ollama.chat({
-        model: "stablelm-zephyr",
-        messages: [{ role: "user", content: query, num_ctx: 100 }],
-      });
-
-      message.reply(response.message.content);
-    } catch (error) {
-      console.error("Error with Ollama API:", error);
-      message.reply(
-        "KingBot Zephyr is currently offline, or an error has occured."
       );
     }
   }
@@ -2227,23 +2216,6 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on('messageCreate', async (message) => {
-  if (message.content === '$resetdevtool') {
-    const authorizedUserId = '786745378212282368';
-    if (message.author.id !== authorizedUserId) {
-      return message.reply("You don't have permission to use this command.");
-    }
-
-    try {
-      await ChatHistory.deleteMany({});
-      message.reply('Chat histories have been successfully reset.');
-    } catch (error) {
-      console.error('Error resetting chat histories:', error);
-      message.reply('There was an error resetting the chat histories.');
-    }
-  }
-});
-
-client.on('messageCreate', async (message) => {
   if (message.content.startsWith('$image')) {
     const args = message.content.split(' ').slice(1);
 
@@ -2300,6 +2272,155 @@ client.on('messageCreate', async (message) => {
   }
 });
 
+//Admin Artificial Intelligence
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminchatgpt")) {
+    const prompt = message.content.slice("$adminchatgpt".length).trim();
+
+    if (!prompt) {
+      message.reply("Please use `$adminchatgpt (prompt)` to send ChatGPT a prompt.");
+      return;
+    }
+
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo-0125",
+        max_tokens: 100,
+        messages: [
+          { role: "system", content: "Chat GPT is an AI Chatbot." },
+          { role: "user", content: prompt },
+        ],
+      });
+
+      message.reply(response.choices[0].message.content);
+    } catch (error) {
+      console.error("Error:", error);
+      message.reply(
+        "KingBot ChatGPT is currently offline, has reached its token limit,or an error has occured."
+      );
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$admingeminipro")) {
+    const prompt = message.content.slice("$admingeminipro".length).trim();
+
+    if (!message.author.id === "786745378212282368") {
+      message.reply("You are not authorized to use this command.");
+      return;
+    }
+
+    if (!prompt) {
+      message.reply(
+        "Please use `$admingeminipro (prompt)` to send Gemini a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+      );
+      return;
+    }
+
+    try {
+      const result = await gemini15Pro.generateContent(prompt);
+      const response = result.response;
+      const text = response.text();
+
+      const chunkSize = 2000;
+      let chunks = [];
+      let currentChunk = "";
+
+      const lines = text.split("\n");
+
+      for (const line of lines) {
+        if (currentChunk.length + line.length > chunkSize) {
+          chunks.push(currentChunk);
+          currentChunk = line;
+        } else {
+          currentChunk += (currentChunk ? "\n" : "") + line;
+        }
+      }
+
+      if (currentChunk) {
+        chunks.push(currentChunk);
+      }
+
+      for (const chunk of chunks) {
+        await message.reply(chunk);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      message.reply(
+        "KingBot Gemini 1.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
+      );
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminllama")) {
+    const query = message.content.slice("$adminllama".length).trim();
+
+    if (!query) {
+      message.reply("Please use `$adminllama (prompt)` to use Meta LLaMa 3. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return;
+    }
+
+    try {
+      const response = await ollama.chat({
+        model: "llama3:8b",
+        messages: [{ role: "user", content: query, options: { num_ctx: 100 } }],
+      });
+
+      message.reply(response.message.content);
+    } catch (error) {
+      console.error("Error with Ollama API:", error);
+      message.reply(
+        "KingBot LLaMa is currently offline, or an error has occured."
+      );
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminzephyr")) {
+    const query = message.content.slice("$adminzephyr".length).trim();
+
+    if (!query) {
+      message.reply("Please use `$adminzephyr (prompt)` to use Zephyr AI. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return;
+    }
+
+    try {
+      const response = await ollama.chat({
+        model: "stablelm-zephyr",
+        messages: [{ role: "user", content: query, num_ctx: 100 }],
+      });
+
+      message.reply(response.message.content);
+    } catch (error) {
+      console.error("Error with Ollama API:", error);
+      message.reply(
+        "KingBot Zephyr is currently offline, or an error has occured."
+      );
+    }
+  }
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.content === '$adminchatreset') {
+    const authorizedUserId = '786745378212282368';
+    if (message.author.id !== authorizedUserId) {
+      return message.reply("You don't have permission to use this command.");
+    }
+
+    try {
+      await ChatHistory.deleteMany({});
+      message.reply('Chat histories have been successfully reset.');
+    } catch (error) {
+      console.error('Error resetting chat histories:', error);
+      message.reply('There was an error resetting the chat histories.');
+    }
+  }
+});
+
 //Miscellaneous
 client.on("messageCreate", (message) => {
   if (message.content === "$topgg") {
@@ -2330,7 +2451,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "help") {
     return interaction.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze and image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)human = Ask Gemini Human a prompt \n($)nameset = Set your name for Gemini Human \n($)vision = Send an image to Gemini Human \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -2435,7 +2556,6 @@ client.on("interactionCreate", (interaction) => {
 });
 
 //Economy Slash Command Listeners
-
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
@@ -2446,11 +2566,15 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply("You already have an account.");
     } else {
       user = await User.create({
-        discordId: interaction.user.id,
-        username: interaction.user.username,
+        discordId: message.author.id,
+        username: message.author.username,
         balance: 0,
         lastDailyCollected: null,
         lastClaimCollected: null,
+        lastVoteTimestamp: null,
+        currencies: {},
+        name: null,
+        stocks: [],
       });
 
       return interaction.reply("Your account has been created.");
@@ -2609,6 +2733,14 @@ client.on("interactionCreate", async (interaction) => {
         "There was an error checking your vote status. Please try again later."
       );
     }
+  }
+});
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "pay") {
+    await handlePaySlash(interaction);
   }
 });
 
@@ -3477,16 +3609,56 @@ async function checkUserNetWorthSlash(userId, interaction) {
   }
 }
 
+async function handlePaySlash(interaction) {
+  const targetUser = interaction.options.getUser("user");
+  const payAmount = interaction.options.getNumber("amount");
+  const senderId = interaction.user.id;
+  const targetUserId = targetUser.id;
+
+  if (senderId === targetUserId) {
+    await interaction.reply("You cannot pay yourself.", { ephemeral: true });
+    return;
+  }
+
+  if (payAmount <= 0) {
+    await interaction.reply("Please enter a valid transfer amount (greater than 0).", { ephemeral: true });
+    return;
+  }
+
+  const sender = await User.findOne({ discordId: senderId });
+  const recipient = await User.findOne({ discordId: targetUserId });
+
+  if (!sender) {
+    await interaction.reply("You need to create an account first with `/start`.", { ephemeral: true });
+    return;
+  }
+
+  if (!recipient) {
+    await interaction.reply("The recipient has not created an account yet.", { ephemeral: true });
+    return;
+  }
+
+  if (sender.balance < payAmount) {
+    await interaction.reply("Insufficient funds.", { ephemeral: true });
+    return;
+  }
+
+  sender.balance -= payAmount;
+  recipient.balance += payAmount;
+
+  await sender.save();
+  await recipient.save();
+
+  await interaction.reply(`Successfully transferred $${payAmount.toFixed(2)} to <@${targetUserId}>.`);
+}
 
 //Temporary
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$startping")) {
+  if (message.content.startsWith("$adminstartping")) {
     if (
       ![
-        "786745378212282368",
-        "737353026976612374",
-        "811976354568208404",
+        "786745378212282368"
       ].includes(message.author.id)
     ) {
       message.reply("You are not authorized to use this command.");
@@ -3538,112 +3710,6 @@ client.on("messageCreate", async (message) => {
         client.off("messageCreate", stopMessage);
       }
     });
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content === "$fixfields" && message.author.id === "786745378212282368") {
-    try {
-      const users = await User.find();
-
-      for (const user of users) {
-        let updated = false;
-
-        if (user.username === undefined) {
-          try {
-            const discordUser = await client.users.fetch(user.discordId);
-            user.username = discordUser.username;
-            updated = true;
-          } catch (err) {
-            console.error(`Could not fetch user ${user.discordId}:`, err);
-            continue;
-          }
-        }
-
-        if (user.balance === undefined) {
-          user.balance = 0;
-          updated = true;
-        }
-        if (user.lastDailyCollected === undefined) {
-          user.lastDailyCollected = null;
-          updated = true;
-        }
-        if (user.lastClaimCollected === undefined) {
-          user.lastClaimCollected = null;
-          updated = true;
-        }
-        if (user.lastVoteTimestamp === undefined) {
-          user.lastVoteTimestamp = null;
-          updated = true;
-        }
-        if (user.currencies === undefined) {
-          user.currencies = {};
-          updated = true;
-        }
-        if (user.name === undefined) {
-          user.name = null;
-          updated = true;
-        }
-        if (user.stocks === undefined) {
-          user.stocks = [];
-          updated = true;
-        }
-
-        if (updated) {
-          await user.save();
-          console.log(`Fixed missing fields for user ${user.discordId}`);
-        }
-      }
-
-      message.reply("All missing fields have been fixed for user documents.");
-    } catch (error) {
-      console.error("Error fixing fields:", error);
-      message.reply("There was an error fixing fields. Please try again later.");
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$adminpay")) {
-    const adminId = '786745378212282368';
-
-    if (message.author.id !== adminId) {
-      message.reply("You do not have permission to use this command.");
-      return;
-    }
-
-    const args = message.content.split(" ").slice(1);
-
-    if (args.length !== 2) {
-      message.reply("Please use `$adminpay (user) (amount)` to transfer funds.");
-      return;
-    }
-
-    const targetUserId = await resolveUser(args[0], message);
-    const payAmount = parseInt(args[1]);
-
-    if (!targetUserId) {
-      message.reply("Please enter a valid recipient.");
-      return;
-    }
-
-    if (isNaN(payAmount) || payAmount <= 0) {
-      message.reply("Please enter a valid transfer amount.");
-      return;
-    }
-
-    const recipient = await User.findOne({ discordId: targetUserId });
-
-    if (!recipient) {
-      message.reply("The recipient has not created an account yet.");
-      return;
-    }
-
-    recipient.balance += payAmount;
-
-    await recipient.save();
-
-    message.reply(`Successfully transferred $${payAmount} to <@${targetUserId}>.`);
   }
 });
 

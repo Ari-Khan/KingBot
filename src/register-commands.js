@@ -5,6 +5,10 @@ dotenv.config();
 
 const commands = [
   {
+    name: "help",
+    description: "Bot Commands",
+  },
+  {
     name: "kingbot",
     description: "Bot Information",
   },
@@ -119,6 +123,25 @@ const commands = [
       },
     ],
   },
+
+  {
+    name: "pay",
+    description: "Pay a user a specified amount of money",
+    options: [
+      {
+        name: "user",
+        description: "The user to pay",
+        type: 6,
+        required: true,
+      },
+      {
+        name: "amount",
+        description: "The amount to pay",
+        type: 10,
+        required: true,
+      },
+    ],
+  },
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
@@ -138,7 +161,7 @@ async function deleteSlashCommand(commandId) {
 
     console.log("Slash commands were registered successfully!");
 
-    await deleteSlashCommand(''); // Enter command ID here to delete the command
+    // await deleteSlashCommand(''); // Enter command ID here to delete the command
 
   } catch (error) {
     console.log(`There was an error: ${error}`);

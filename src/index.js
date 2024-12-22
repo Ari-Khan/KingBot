@@ -6,7 +6,6 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { DynamicRetrievalMode } from "@google/generative-ai";
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import { GoogleAIFileManager } from "@google/generative-ai/server";
 import { OpenAI } from "openai";
@@ -118,27 +117,6 @@ const gemini20FlashThinking = genAI.getGenerativeModel({
     temperature: 1.25,
   },
 });
-const gemini15Grounding = genAI.getGenerativeModel(
-  { 
-    model: "gemini-1.5-flash-latest",
-    safetySettings: safetySettings,
-    generationConfig: {
-      maxOutputTokens: 8192,
-      temperature: 1.25,
-    },
-    tools: [
-      {
-        googleSearchRetrieval: {
-          dynamicRetrievalConfig: {
-          mode: DynamicRetrievalMode.MODE_DYNAMIC,
-          dynamicThreshold: 0.7,
-          },
-        },
-      },
-    ],
-  },
-  { apiVersion: "v1beta" },
-);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const ollama = new Ollama({ baseURL: "http://localhost:11434/api/generate" });
@@ -2362,76 +2340,6 @@ client.on("messageCreate", async (message) => {
       console.error("Error:", error);
       message.reply(
         "KingBot Gemini 2.0 Flash Thinking is currently offline, has reached its maximum requests per minute, or an error has occurred."
-      );
-    }
-  }
-});
-
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$google")) {
-    const prompt = message.content.slice("$google".length).trim();
-
-    if (!prompt) {
-      message.reply(
-        "Please use `$google (prompt)` to send Gemini 1.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-      );
-      return;
-    }
-
-    try {
-      const result = await gemini15Pro.generateContent(prompt);
-      const response = result.response;
-
-      // Debug: Log the full response object
-      console.log("Full Response:", JSON.stringify(response, null, 2));
-
-      const replyText = response.candidates[0]?.text || "No response content available.";
-      const webSearchQueries =
-        response.candidates[0]?.groundingMetadata?.webSearchQueries || [];
-
-      const chunkSize = 2000;
-
-      const chunkText = (text) => {
-        let chunks = [];
-        let currentChunk = "";
-        const lines = text.split("\n");
-
-        for (const line of lines) {
-          if (currentChunk.length + line.length > chunkSize) {
-            chunks.push(currentChunk);
-            currentChunk = line;
-          } else {
-            currentChunk += (currentChunk ? "\n" : "") + line;
-          }
-        }
-
-        if (currentChunk) {
-          chunks.push(currentChunk);
-        }
-
-        return chunks;
-      };
-
-      // Chunk and reply with generated content
-      const replyChunks = chunkText(replyText);
-      for (const chunk of replyChunks) {
-        await message.reply(`**Response:**\n${chunk}`);
-      }
-
-      // Display Google Search Suggestions if available
-      if (webSearchQueries.length > 0) {
-        const queriesText = webSearchQueries.join("\n");
-        const queriesChunks = chunkText(`**Google Search Suggestions:**\n${queriesText}`);
-        for (const chunk of queriesChunks) {
-          await message.reply(chunk);
-        }
-      } else {
-        message.reply("No Google Search Suggestions available for this prompt.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot Gemini 1.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }

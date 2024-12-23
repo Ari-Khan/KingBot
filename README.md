@@ -1,6 +1,6 @@
 ## About KingBot
 
-KingBot is a multipurpose Discord Bot created by Ari Khan. Its main features are currently an advanced economy, entertainment, and media sharing. The bot is currently in active development. If you want information about the bot or have suggestions, please don't hesitate to contact Ari Khan.
+KingBot is a multipurpose Discord Bot created by Ari Khan. Its main features are currently artificial intelligence, an advanced economy, entertainment, and media sharing. The bot is currently in active development. If you want information about the bot or have suggestions, please don't hesitate to contact Ari Khan at support@ari-khan.com.
 
 ## Features
 

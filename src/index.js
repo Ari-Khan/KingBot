@@ -256,7 +256,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -1834,6 +1834,40 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error banning user:", error);
       message.reply("An error occurred while banning the user.");
+    }
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminunban")) {
+    if (message.author.id !== "786745378212282368") {
+      return message.reply("You do not have permission to use this command.");
+    }
+
+    const args = message.content.split(" ").slice(1);
+
+    if (args.length < 1) {
+      return message.reply("Please use `$adminunban (user)` to unban a user from using AI features.");
+    }
+
+    const query = args[0];
+    const userId = await resolveUser(query, message);
+
+    if (!userId) {
+      return message.reply("Could not resolve the user. Please provide a valid mention, ID, or username.");
+    }
+
+    try {
+      const existingBan = await BannedUser.findOne({ discordId: userId });
+      if (!existingBan) {
+        return message.reply("This user is not banned.");
+      }
+
+      await BannedUser.deleteOne({ discordId: userId });
+      message.reply(`User <@${userId}> has been unbanned from using AI features.`);
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      message.reply("An error occurred while unbanning the user.");
     }
   }
 });

@@ -78,6 +78,7 @@ import ChatHistory from "./schemas/chat-history.js";
 import Count from "./schemas/count.js";
 import User from "./schemas/users.js";
 import KingBotStock from "./schemas/kingBotStock.js";
+import BannedUser from "./schemas/banned-users.js";
 
 dotenv.config();
 
@@ -194,7 +195,7 @@ client.on("ready", async () => {
 client.on("messageCreate", (message) => {
   if (message.content === "$help") {
     message.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -255,7 +256,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -1800,12 +1801,49 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminaiban")) {
+    if (message.author.id !== "786745378212282368") {
+      return message.reply("You do not have permission to use this command.");
+    }
+
+    const args = message.content.split(" ").slice(1);
+
+    if (args.length < 2) {
+      return message.reply(
+        "Please use `$adminaiban (user) (reason)` to ban a user from using AI features."
+      );
+    }
+
+    const query = args[0];
+    const reason = args.slice(1).join(" ");
+    const userId = await resolveUser(query, message);
+
+    if (!userId) {
+      return message.reply("Could not resolve the user. Please provide a valid mention, ID, or username.");
+    }
+
+    try {
+      const existingBan = await BannedUser.findOne({ discordId: userId });
+      if (existingBan) {
+        return message.reply("This user is already banned.");
+      }
+
+      await BannedUser.create({ discordId: userId, reason });
+      message.reply(`User <@${userId}> has been banned for: ${reason}`);
+    } catch (error) {
+      console.error("Error banning user:", error);
+      message.reply("An error occurred while banning the user.");
+    }
+  }
+});
+
 //Artificial Intelligence
 client.on("messageCreate", async (message) => {
-  if (
-    message.content.startsWith("$gemini") &&
-    message.author.id !== "959646737780326460"
-  ) {
+  if (message.content.startsWith("$gemini")) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
@@ -1834,6 +1872,9 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$chat")) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const prompt = message.content.slice("$chat".length).trim();
 
     if (!prompt) {
@@ -1984,6 +2025,9 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$visual")) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const imageAttachment = message.attachments.first();
     const prompt = message.content.slice("$visual".length).trim();
 
@@ -2037,6 +2081,9 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$vision")) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const imageAttachment = message.attachments.first();
     const prompt = message.content.slice("$vision".length).trim();
 
@@ -2154,6 +2201,9 @@ client.on("messageCreate", async (message) => {
 
 client.on('messageCreate', async (message) => {
   if (message.content.startsWith('$image')) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const args = message.content.split(' ').slice(1);
 
     if (args.length === 0 || !args[0]) {
@@ -2211,6 +2261,9 @@ client.on('messageCreate', async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$think")) {
+    const isBanned = await checkIfAIBanned(message);
+    if (isBanned) return;
+
     const prompt = message.content.slice("$think".length).trim();
 
     if (!prompt) {
@@ -2424,7 +2477,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "help") {
     return interaction.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -3625,6 +3678,25 @@ async function sellKingbotStock(message, amount) {
   } catch (error) {
     console.error("Error selling KGB stock:", error);
     message.reply("Error selling KGB stock. Please try again later.");
+  }
+}
+
+//Moderation Functions
+async function checkIfAIBanned(message) {
+  try {
+    const bannedUser = await BannedUser.findOne({ discordId: message.author.id });
+
+    if (bannedUser) {
+      await message.reply(
+        `You are banned from using AI features.\n**Reason**: ${bannedUser.reason}`
+      );
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking AI ban status:", error);
+    await message.reply("An error occurred while checking your status. Please try again later.");
+    return true;
   }
 }
 

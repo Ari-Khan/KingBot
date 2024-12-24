@@ -1877,7 +1877,7 @@ client.on("messageCreate", async (message) => {
         "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
         "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
         "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
-        "Don't get offended, be kind and pleasant, and don't be arrogant.",
+        "Don't get offended, be kind, be agreeable, and don't be arrogant.",
         "Do not make general responses too long, unless explictly stated or implied.",
         "Listen to prompts in a clear way and try to understand them better.",
         "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
@@ -2080,7 +2080,7 @@ client.on("messageCreate", async (message) => {
         "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
         "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
         "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
-        "Don't get offended, be kind and pleasant, and don't be arrogant.",
+        "Don't get offended, be kind, be agreeable, and don't be arrogant.",
         "Listen to prompts in a clear way and try to understand them better.",
         "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
         "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
@@ -3470,7 +3470,7 @@ async function updateKGBPrice() {
       if (stock.lastHourChange) {
         const timeElapsed = (now - stock.lastHourChange) / 1000;
         if (timeElapsed >= 3600) {
-          const priceChangePercentage = (Math.random() * (0.05 + 0.06) - 0.06);
+          const priceChangePercentage = (Math.random() * (0.05 + 0.07) - 0.07);
           stock.price += stock.price * priceChangePercentage;
 
           if (stock.price < 10) {
@@ -3499,7 +3499,7 @@ async function updateKGBPrice() {
       if (stock.lastHalfDayChange) {
         const timeElapsed = (now - stock.lastHalfDayChange) / 1000;
         if (timeElapsed >= 43200) {
-          const priceChangePercentage = (Math.random() * (0.10 + 0.25) - 0.25);
+          const priceChangePercentage = (Math.random() * (0.10 + 0.30) - 0.30);
           stock.price += stock.price * priceChangePercentage;
 
           if (stock.price < 10) {

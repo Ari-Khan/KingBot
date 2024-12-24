@@ -1802,7 +1802,10 @@ client.on("messageCreate", async (message) => {
 
 //Artificial Intelligence
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$gemini")) {
+  if (
+    message.content.startsWith("$gemini") &&
+    message.author.id !== "959646737780326460"
+  ) {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {

@@ -256,7 +256,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiunban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -1839,7 +1839,7 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$adminunban")) {
+  if (message.content.startsWith("$adminaiunban")) {
     if (message.author.id !== "786745378212282368") {
       return message.reply("You do not have permission to use this command.");
     }

@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Client, GatewayIntentBits, ActivityType, EmbedBuilder } from "discord.js";
 import mongoose from "mongoose";
 import fetch from "node-fetch";
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenerativeAI } from "@google/generative-ai";

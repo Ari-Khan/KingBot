@@ -1638,12 +1638,13 @@ client.on("messageCreate", (message) => {
     try {
       const memeEmbed = eval(`ClassMeme${memeNumber}`);
 
-      if (memeEmbed) {
+      if (typeof memeEmbed === "object" && memeEmbed !== null) {
         message.reply({ embeds: [memeEmbed] });
       } else {
         message.reply("Please enter a valid class meme number.");
       }
     } catch (error) {
+      console.error("Error fetching class meme:", error);
       message.reply("Please enter a valid class meme number.");
     }
   }

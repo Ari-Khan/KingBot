@@ -1627,19 +1627,24 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content.startsWith("$classmeme")) {
     const memeNumber = message.content.split(" ")[1];
-    
+
     if (!memeNumber) {
       message.reply(
         "**Sending Class Memes** \nPlease use `$classmeme (number)` to send a meme."
       );
-    } else {
-      const memeEmbed = eval(`ClassMeme${memeNumber}`); 
+      return;
+    }
+
+    try {
+      const memeEmbed = eval(`ClassMeme${memeNumber}`);
 
       if (memeEmbed) {
         message.reply({ embeds: [memeEmbed] });
       } else {
-        message.reply("Please use `$classmeme (number)` to send a meme.");
+        message.reply("Please enter a valid class meme number.");
       }
+    } catch (error) {
+      message.reply("Please enter a valid class meme number.");
     }
   }
 });

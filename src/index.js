@@ -1975,8 +1975,7 @@ client.on("messageCreate", async (message) => {
 
       const humanPrompt =
         humanConditions.join(" ") +
-        ". Prompt: " +
-        "Now answer this: " +
+        ". Now answer this: " +
         prompt;
 
       const historyDocuments = await ChatHistory.find()

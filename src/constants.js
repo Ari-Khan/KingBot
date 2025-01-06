@@ -7,17 +7,6 @@ export const values = {
   '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11
 };
 
-const election = new EmbedBuilder()
-  .setTitle("2024 Presidential Election Prediction Consensus")
-  .setImage("https://www.270towin.com/map-images/consensus-2024-presidential-election-forecast")
-  .addFields([
-    { 
-      name: "Polling Averages from:", 
-      value: "**https://www.270towin.com**"
-    }
-  ])
-export { election };
-
 //Embeds
 
 //Desert
@@ -619,31 +608,34 @@ export const randomFactList = [
 ];
 
 export const randomAriQuoteList = [
-  '**"WOW OMG! It\'s a United Arab Emirates Airbus A380, and it has two floors!"** \n(Ari, pointing to the sky. November 2023.)',
-  '**"i tryed playing an airplane game \nbut its p2w \nand it suks \nnot even that realistic \ni hit the ground at 50 kmph and my 2 passengers were still intact enought to get off the plane and pay me 10 grand"** \n(Ari, random blurb. September 2022.)',
-  '**"is this jade or candice or chloe"** \n(Ari, asking question. September 2022.)',
-  "**\"What's your name again?\"** \n(Ari, forgetting Chloe's name during a class activity. 2021-2022.)",
-  '**"bruh \nthe admission to kindergarten law is 125.9 while the murder ones are all 125.10"** \n(Ari, reading the list of laws in New York State. February 2023.)',
-  '**"this ukranian guy wants sympathy in chess \nand keeps asking if i\'m russian"** \n(Ari, playing chess. February 2023.)',
-  '**"because lowering the wealth gap is communist"** \n(Ari, being political. January 2023.)',
-  '**"should i troll the survey people \nby writing a paragraph"** \n(Ari, proceeding to troll. January 2023.)',
-  '**"if i write something anti capitalist will it be censored"** \n(Ari, being cautious. January 2023.)',
-  '**"im a hippocrite"** \n(Ari, contradicting himself. December 2022.)',
-  '**"im looking at my life \nand \n i\'m realizing \nthat i got much more older in the last 2 months"** \n(Ari, looking back. November 2022.)',
-  '**"people who think they are old die faster \napparently"** \n(Ari, realizing he won\'t live very long. November 2022.)',
-  "**\"don't name ur kids marie jeanne \nor aurelie \nor krystel \nor marie berthe \nor paquerrete \nor hormidas \nor alfreda \nor Jeanne 'arc \nor Fabiola \nor they will be failure\"** \n(Ari, reading list of poorest names. November 2022.)",
-  '**"if you want sucessful child, name them \nRes \nIngo"** \n(Ari, reading list of richest names. November 2022.)',
-  "**\"Let's start a discussion. \nSo, there are some quarks, up quark, down quark, strange quarks, magic quarks, and like two others. \nThey're make up protons and neutrons, \nand are made up of strings themselves...\"** \n(Ari, talking about quarks. November 2023.)",
-  '**"Some people say that the universe is shaped like a brain."** \n(Ari, discussing the shape of the universe. November 2023.)',
-  '**"Black Dwarf Stars come from White Dwarfs but haven\'t been proven. \nWhat???"** \n(Ari, discussing dwarf stars. November 2023.)',
-  '**"It\'s the "goodest" one."** \n(Ari, speaking fake English. September 2023.)',
-  '**"I swear it\'s water bro!"** \n(Ari, speaking to the police. November 2023.)',
-  "**\"I swear I'm not Gen Alpha. Im just not like them! I wasn't born holding an Iphone.\"** \n(Ari, persuading others that he is Gen Z. February 2024.)",
-  '**"My life could be a tragedy movie, or it could be an epic."** \n(Ari, talking about his life. January 2024.)',
-  "**Hmm... \nWe haven't had a World War in a while...** \n(Ari, talking about history. March 2024.)",
-  '**Eminem might be the king of rap, \nBut I\'m the king of yap!** \n(Ari, "yapping." April 2024.)',
-  "**Tyler! \n That's blatantly innapropriate!** \n(Ari, shouting at Tyler for innapropriate behaviour. May 2024.)",
-  "**Indoor basketball courts are for running in!** \n(Ari, debating with Yiming. June 2024.)",
+  '**"WOW OMG! It\'s a United Arab Emirates Airbus A380, and it has two floors!"** \n(November 2023.)',
+  '**"i tryed playing an airplane game \nbut its p2w \nand it suks \nnot even that realistic \ni hit the ground at 50 kmph and my 2 passengers were still intact enought to get off the plane and pay me 10 grand"** \n(September 2022.)',
+  '**"is this jade or candice or chloe"** \n(September 2022.)',
+  "**\"What's your name again?\"** \n(2021-2022.)",
+  '**"bruh \nthe admission to kindergarten law is 125.9 while the murder ones are all 125.10"** \n(February 2023.)',
+  '**"this ukranian guy wants sympathy in chess \nand keeps asking if i\'m russian"** \n(February 2023.)',
+  '**"because lowering the wealth gap is communist"** \n(January 2023.)',
+  '**"should i troll the survey people \nby writing a paragraph"** \n(January 2023.)',
+  '**"if i write something anti capitalist will it be censored"** \n(January 2023.)',
+  '**"im a hippocrite"** \n(December 2022.)',
+  '**"im looking at my life \nand \n i\'m realizing \nthat i got much more older in the last 2 months"** \n(November 2022.)',
+  '**"people who think they are old die faster \napparently"** \n(November 2022.)',
+  "**\"don't name ur kids marie jeanne \nor aurelie \nor krystel \nor marie berthe \nor paquerrete \nor hormidas \nor alfreda \nor Jeanne 'arc \nor Fabiola \nor they will be failure\"** \n(November 2022.)",
+  '**"if you want sucessful child, name them \nRes \nIngo"** \n(November 2022.)',
+  "**\"Let's start a discussion. \nSo, there are some quarks, up quark, down quark, strange quarks, magic quarks, and like two others. \nThey're make up protons and neutrons, \nand are made up of strings themselves...\"** \n(November 2023.)",
+  '**"Some people say that the universe is shaped like a brain."** \n(November 2023.)',
+  '**"Black Dwarf Stars come from White Dwarfs but haven\'t been proven. \nWhat???"** \n(November 2023.)',
+  '**"It\'s the "goodest" one."** \n(September 2023.)',
+  '**"I swear it\'s water bro!"** \n(November 2023.)',
+  "**\"I swear I'm not Gen Alpha. Im just not like them! I wasn't born holding an Iphone.\"** \n(February 2024.)",
+  '**"My life could be a tragedy movie, or it could be an epic."** \n(January 2024.)',
+  "**Hmm... \nWe haven't had a World War in a while...** \n(March 2024.)",
+  '**Eminem might be the king of rap, \nBut I\'m the king of yap!** \n(April 2024.)',
+  "**Tyler! \n That's blatantly innapropriate!** \n(May 2024.)",
+  "**Indoor basketball courts are for running in!** \n(June 2024.)",
+  "**At this rate, the majority of high-schoolers will be forever unemployed due to their internet record.** \n(October 2024.)",
+  "**I\'m afraid that we must either be in a perpetual time-loop or doomed to die forever.** \n(December 2024.)",
+  "**I\'m surprised by the fact that while people don\'t know why they exist, they still live as if they had a greater purpose...** \n(January 2025.)",
 ];
 
 export const testWordBank = [

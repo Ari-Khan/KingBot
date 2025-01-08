@@ -256,7 +256,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiunban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiunban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt \n\n**Miscellaneous** \n($)adminreact = Make KingBot react to a message"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -2507,6 +2507,39 @@ client.on("messageCreate", async (message) => {
     await countDoc.save();
 
     message.reply(`The count is now ${countDoc.value}.`);
+  }
+});
+
+//Admin Miscellaneous
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$adminreact")) {
+    if (message.author.id !== "786745378212282368") {
+      message.reply("You are not authorized to use this command.");
+      return;
+    }
+
+    // Extract arguments from the message
+    const args = message.content.slice("$adminreact".length).trim().split(" ");
+    const messageId = args[0];
+    const emojiString = args.slice(1).join(" ");
+
+    if (!messageId || !emojiString) {
+      message.reply("Please use `$adminreact (messageId) (emojis)` to make KingBot react to a message.");
+      return;
+    }
+
+    try {
+      const targetMessage = await message.channel.messages.fetch(messageId);
+
+      for (const emoji of emojiString) {
+        await targetMessage.react(emoji);
+      }
+
+      message.reply("Reactions added successfully!");
+    } catch (error) {
+      console.error("Error reacting to the message:", error);
+      message.reply("An error occurred while trying to react to the message. Please check the message ID and emojis.");
+    }
   }
 });
 

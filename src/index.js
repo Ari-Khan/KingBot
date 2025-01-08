@@ -2542,7 +2542,6 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-
 //Informational Slash Commands Listeners
 client.on("interactionCreate", (interaction) => {
   if (!interaction.isChatInputCommand()) return;

@@ -2518,20 +2518,19 @@ client.on("messageCreate", async (message) => {
       return;
     }
 
-    // Extract arguments from the message
     const args = message.content.slice("$adminreact".length).trim().split(" ");
-    const messageId = args[0];
-    const emojiString = args.slice(1).join(" ");
+    const messageId = args.shift(); 
+    const emojiString = args.join("");
 
     if (!messageId || !emojiString) {
-      message.reply("Please use `$adminreact (messageId) (emojis)` to make KingBot react to a message.");
+      message.reply("Usage: `$adminreact (messageId) (emojis)`");
       return;
     }
 
     try {
       const targetMessage = await message.channel.messages.fetch(messageId);
 
-      for (const emoji of emojiString) {
+      for (const emoji of [...emojiString]) {
         await targetMessage.react(emoji);
       }
 
@@ -2542,6 +2541,7 @@ client.on("messageCreate", async (message) => {
     }
   }
 });
+
 
 //Informational Slash Commands Listeners
 client.on("interactionCreate", (interaction) => {

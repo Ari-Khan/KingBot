@@ -1887,7 +1887,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$gemini (prompt)` to send Gemini 2.0 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$gemini (prompt)` to send Gemini 2.0 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -1919,7 +1919,7 @@ client.on("messageCreate", async (message) => {
 
     if (!prompt) {
       message.reply(
-        "Please use $chat (prompt) to interact with Gemini Chat. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+        "Please use $chat (prompt) to interact with Gemini Chat. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
       );
       return;
     }
@@ -2075,7 +2075,7 @@ client.on("messageCreate", async (message) => {
     }
 
     if (!prompt) {
-      return message.reply("Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return message.reply("Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
     }
 
     try {
@@ -2131,7 +2131,7 @@ client.on("messageCreate", async (message) => {
     }
 
     if (!prompt) {
-      return message.reply("Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return message.reply("Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
     }
 
     try {
@@ -2247,7 +2247,7 @@ client.on('messageCreate', async (message) => {
 
     if (args.length === 0 || !args[0]) {
       return message.reply(
-        "**Sending Images**\nUse `$image (prompt) | (model) (width) (height) (raw)` to generate an image.\n\n**Available Models** \n- flux (default) (slow, medium-detail, all-purpose) \n- pro (flux-pro) (medium, high-detail, all-purpose) \n- realism (flux-realism) (medium, high-detail, realistic) \n- anime (flux-anime) (fast, low-detail, anime) \n- 3D (flux-3D) (medium, medium-detail, 3D rendering) \n- cablyai (flux-CablyAI) (medium, high-detail, all-purpose) \n- turbo (turbo) (fast, medium-detail, photorealistic) \n\n**Optional Parameters** \n- width (in pixels) \n- height (in pixels)\n- raw (uses raw prompt without enhancement) \n\n**Speed Reference** \n- slow (~35 seconds) \n- medium (~25 seconds) \n- fast (~10 seconds) \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+        "**Sending Images**\nUse `$image (prompt) | (model) (width) (height) (raw)` to generate an image.\n\n**Available Models** \n- flux (default) (slow, medium-detail, all-purpose) \n- pro (flux-pro) (medium, high-detail, all-purpose) \n- realism (flux-realism) (medium, high-detail, realistic) \n- anime (flux-anime) (fast, low-detail, anime) \n- 3D (flux-3D) (medium, medium-detail, 3D rendering) \n- cablyai (flux-CablyAI) (medium, high-detail, all-purpose) \n- turbo (turbo) (fast, medium-detail, photorealistic) \n\n**Optional Parameters** \n- width (in pixels) \n- height (in pixels)\n- raw (uses raw prompt without enhancement) \n\n**Speed Reference** \n- slow (~35 seconds) \n- medium (~25 seconds) \n- fast (~10 seconds) \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
       );
     }
 
@@ -2306,7 +2306,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$think".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$think (prompt)` to send Gemini 2.0 Flash Think a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$think (prompt)` to send Gemini 2.0 Flash Think a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -2379,7 +2379,7 @@ client.on("messageCreate", async (message) => {
 
     if (!prompt) {
       message.reply(
-        "Please use `$admingeminipro (prompt)` to send Gemini 1.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+        "Please use `$admingeminipro (prompt)` to send Gemini 1.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
       );
       return;
     }
@@ -2425,7 +2425,7 @@ client.on("messageCreate", async (message) => {
     const query = message.content.slice("$adminllama".length).trim();
 
     if (!query) {
-      message.reply("Please use `$adminllama (prompt)` to use Meta LLaMa 3. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$adminllama (prompt)` to use Meta LLaMa 3. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -2450,7 +2450,7 @@ client.on("messageCreate", async (message) => {
     const query = message.content.slice("$adminzephyr".length).trim();
 
     if (!query) {
-      message.reply("Please use `$adminzephyr (prompt)` to use Zephyr AI. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the malicious use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$adminzephyr (prompt)` to use Zephyr AI. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 

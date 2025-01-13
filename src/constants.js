@@ -1357,6 +1357,9 @@ export const movieLinks = {
   "S49": "https://www.youtube.com/watch?v=S8y2aeTtgqw&ab_channel=FilmCampInABox",
   "SPF": "https://www.youtube.com/watch?v=bJFGeV8BiTI&t=1s&ab_channel=FilmCampInABox",
 
+  // RHHS 2025
+  "WTCA": "https://www.youtube.com/watch?v=QfxeYXa8YOE&ab_channel=NoFoxHere",
+
   // Other
   "DAIB": "https://www.youtube.com/watch?v=YWRkH3fX0Jc",
   "TCNT": "https://www.youtube.com/watch?v=ZdWVo82Kx2k",

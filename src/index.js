@@ -3597,7 +3597,7 @@ async function updateKGBPrice() {
       if (stock.lastHourChange) {
         const timeElapsed = (now - stock.lastHourChange) / 1000;
         if (timeElapsed >= 3600) {
-          const priceChangePercentage = (Math.random() * (0.05 + 0.07) - 0.07);
+          const priceChangePercentage = (Math.random() * (0.05 + 0.06) - 0.06);
           stock.price += stock.price * priceChangePercentage;
 
           if (stock.price < 10) {
@@ -3626,7 +3626,7 @@ async function updateKGBPrice() {
       if (stock.lastHalfDayChange) {
         const timeElapsed = (now - stock.lastHalfDayChange) / 1000;
         if (timeElapsed >= 43200) {
-          const priceChangePercentage = (Math.random() * (0.10 + 0.30) - 0.30);
+          const priceChangePercentage = (Math.random() * (0.10 + 0.25) - 0.25);
           stock.price += stock.price * priceChangePercentage;
 
           if (stock.price < 10) {

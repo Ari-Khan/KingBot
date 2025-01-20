@@ -699,6 +699,13 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content === "$netleaderboard" || message.content === "$netlb" || message.content === "$nlb") {
+    const leaderboard = await getNetWorthLeaderboard();
+    message.reply("**Global Net Worth Leaderboard:** \n" + leaderboard);
+  }
+});
+
+client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$net")) {
     const args = message.content.split(" ");
 
@@ -3330,6 +3337,54 @@ async function checkUserNetWorth(userId, message) {
   } catch (error) {
     console.error("Error fetching net worth:", error);
     message.reply("Error fetching net worth. Please try again later.");
+  }
+}
+
+async function getNetWorthLeaderboard() {
+  try {
+    const users = await User.find();
+    const leaderboardData = [];
+
+    for (const user of users) {
+      let totalNetWorth = { USD: user.balance };
+
+      const otherStocks = user.stocks.filter((stock) => stock.symbol !== "KGB");
+      for (const stock of otherStocks) {
+        const currentPrice = await fetchStockPrice(stock.symbol);
+        const stockCurrency = await fetchStockCurrency(stock.symbol);
+
+        if (currentPrice && stockCurrency) {
+          const stockValue = currentPrice * stock.amount;
+          if (!totalNetWorth[stockCurrency]) totalNetWorth[stockCurrency] = 0;
+          totalNetWorth[stockCurrency] += stockValue;
+        }
+      }
+
+      const kgbStock = user.stocks.find((stock) => stock.symbol === "KGB");
+      if (kgbStock) {
+        const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
+        if (kgbData) {
+          const kgbValue = kgbData.price * kgbStock.amount;
+          if (!totalNetWorth[kgbData.currency]) totalNetWorth[kgbData.currency] = 0;
+          totalNetWorth[kgbData.currency] += kgbValue;
+        }
+      }
+
+      const totalUSDNetWorth = totalNetWorth["USD"] || 0;
+      leaderboardData.push({ username: user.username, netWorth: totalUSDNetWorth });
+    }
+
+    leaderboardData.sort((a, b) => b.netWorth - a.netWorth);
+
+    let leaderboardString = "";
+    leaderboardData.slice(0, 10).forEach((entry, index) => {
+      leaderboardString += `${index + 1}. **${entry.username}:** $${entry.netWorth.toFixed(2)}\n`;
+    });
+
+    return leaderboardString || "The leaderboard is currently empty.";
+  } catch (error) {
+    console.error("Error generating leaderboard:", error);
+    return "Error generating leaderboard. Please try again later.";
   }
 }
 

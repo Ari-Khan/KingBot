@@ -55,7 +55,7 @@ export interface GenerateRequest {
   raw?: boolean
   format?: string | object
   images?: Uint8Array[] | string[]
-  keep_alive?: string | number
+  keep_alive?: string | number // a number (seconds) or a string with a duration unit suffix ("300ms", "1.5h", "2h45m", etc)
 
   options?: Partial<Options>
 }
@@ -100,7 +100,7 @@ export interface ChatRequest {
   messages?: Message[]
   stream?: boolean
   format?: string | object
-  keep_alive?: string | number
+  keep_alive?: string | number // a number (seconds) or a string with a duration unit suffix ("300ms", "1.5h", "2h45m", etc)
   tools?: Tool[]
 
   options?: Partial<Options>
@@ -120,10 +120,15 @@ export interface PushRequest {
 
 export interface CreateRequest {
   model: string
-  path?: string
-  modelfile?: string
-  quantize?: string
+  from?: string
   stream?: boolean
+  quantize?: string
+  template?: string
+  license?: string | string[]
+  system?: string
+  parameters?: Record<string, unknown>
+  messages?: Message[]
+  adapters?: Record<string, string>
 }
 
 export interface DeleteRequest {
@@ -146,7 +151,7 @@ export interface EmbedRequest {
   model: string
   input: string | string[]
   truncate?: boolean
-  keep_alive?: string | number
+  keep_alive?: string | number // a number (seconds) or a string with a duration unit suffix ("300ms", "1.5h", "2h45m", etc)
 
   options?: Partial<Options>
 }
@@ -154,7 +159,7 @@ export interface EmbedRequest {
 export interface EmbeddingsRequest {
   model: string
   prompt: string
-  keep_alive?: string | number
+  keep_alive?: string | number // a number (seconds) or a string with a duration unit suffix ("300ms", "1.5h", "2h45m", etc)
 
   options?: Partial<Options>
 }

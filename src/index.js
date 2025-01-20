@@ -203,7 +203,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$kingbot") {
     message.reply(
-      `Hello. My name is KingBot, and I was a multipurpose Discord Bot created by Ari Khan. My main features are currently an advanced economy, entertainment, and media sharing. I am currently in active development. If you want information about the bot or have suggestions, please contact our lead developer, Ari Khan (<@786745378212282368>). \n\n **Creation Date:** October 29, 2023 \n**Made Public:** November 25, 2023 \n\n**Servers:** ${totalGuilds} \n**Users:** ${totalUsers} \n\n**Disclaimer:** KingBot is provided "as is" and is not responsible for any unintended behavior, errors, or outcomes resulting from its use. Users are encouraged to exercise discretion and comply with all applicable rules and laws when interacting with the bot. Features may change during development.`
+      `Hello. My name is KingBot, and I was a multipurpose Discord Bot created by Ari Khan. My main features are currently an advanced economy, entertainment, and media sharing. I am currently in active development. If you want information about the bot or have suggestions, please contact our lead developer, Ari Khan (<@786745378212282368>). \n\n **Creation Date:** October 29, 2023 \n**Made Public:** November 25, 2023 \n\n**Servers:** ${totalGuilds} \n**Users:** ${totalUsers} \n**Website:** https://www.ari-khan.com/ \n\n**Disclaimer:** KingBot is provided "as is" and is not responsible for any unintended behavior, errors, or outcomes resulting from its use. Users are encouraged to exercise discretion and comply with all applicable rules and laws when interacting with the bot. Features may change during development.`
     );
   }
 });
@@ -238,7 +238,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.2 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n **Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });
@@ -2558,7 +2558,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "kingbot") {
     return interaction.reply(
-      `Hello. My name is KingBot, and I was a multipurpose Discord Bot created by Ari Khan. My main features are currently an advanced economy, entertainment, and media sharing. I am currently in active development. If you want information about the bot or have suggestions, please contact our lead developer, Ari Khan (<@786745378212282368>). \n\n **Creation Date:** October 29, 2023 \n**Made Public:** November 25, 2023 \n\n**Servers:** ${totalGuilds} \n**Users:** ${totalUsers}`
+      `Hello. My name is KingBot, and I was a multipurpose Discord Bot created by Ari Khan. My main features are currently an advanced economy, entertainment, and media sharing. I am currently in active development. If you want information about the bot or have suggestions, please contact our lead developer, Ari Khan (<@786745378212282368>). \n\n **Creation Date:** October 29, 2023 \n**Made Public:** November 25, 2023 \n\n**Servers:** ${totalGuilds} \n**Users:** ${totalUsers} \n**Website:** https://www.ari-khan.com/ \n\n**Disclaimer:** KingBot is provided "as is" and is not responsible for any unintended behavior, errors, or outcomes resulting from its use. Users are encouraged to exercise discretion and comply with all applicable rules and laws when interacting with the bot. Features may change during development.`
     );
   }
 });
@@ -2599,7 +2599,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.2 \n\n**NPM Version** \n10.9.2 \n\n**Node.js Version** \n20.10.0 \n\n**Node_Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n **Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });

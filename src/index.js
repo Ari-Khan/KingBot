@@ -692,7 +692,7 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content === "$leaderboard") {
+  if (message.content === "$leaderboard" || message.content === "$lb") {
     const leaderboard = await getBalanceLeaderboard();
     message.reply("**Global Leaderboard:** \n" + leaderboard);
   }

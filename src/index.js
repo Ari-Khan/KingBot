@@ -3434,14 +3434,15 @@ function calculateValue(hand) {
 async function fetchStockPrice(symbol) {
   try {
     const quote = await yahooFinance.quote(symbol);
-    const price = quote.regularMarketPrice;
+    const price = quote?.regularMarketPrice;
 
-    return price;
+    return price || null;
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error(`Error fetching stock price for symbol: ${symbol}`, error);
     return null;
   }
 }
+
 
 async function getStockName(symbol) {
   try {

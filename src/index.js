@@ -195,7 +195,7 @@ client.on("ready", async () => {
 client.on("messageCreate", (message) => {
   if (message.content === "$help") {
     message.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)net = Check the net worth of yourself or another user \n($)leaderboard = View the global leaderboard \n($)netleaderboard = View the global net worth leaderboard \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -238,7 +238,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n **Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });
@@ -2555,7 +2555,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "help") {
     return interaction.reply(
-      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)leaderboard = View the global leaderboard \n($)net = Check the net worth of yourself or another user \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)llama = Ask Meta LLaMa a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
+      "**List of commands:** \n\n**Information/Management** \n($)help = List of Commands \n($)kingbot = Bot Information \n($)ping = Bot Latency \n($)uptime = Bot Uptime \n($)version = Bot Version \n($)links = Bot Links \n\n**Entertainment** \n($)joke = Responds with a Random Joke \n($)longjoke = Responds with a Random Long Joke \n($)fact = Responds with a Random Fact \n($)ari = Responds with a Random Ari Quote \n($)typetest = Test your typing speed \n($)typerace = Challenge your typing skills \n\n**Economy** \n($)start = Create a KingBot account \n($)bal = Check the balance of yourself or another user \n($)daily = Claim your daily salary \n($)claim = Claim your hourly salary \n($)vote = Claim your top.gg upvote reward \n($)pay = Transfer funds to another user \n($)net = Check the net worth of yourself or another user \n($)leaderboard = View the global leaderboard \n($)netleaderboard = View the global net worth leaderboard \n\n**Casino** \n($)coinflip = Bet money on a coin flip \n($)blackjack = Bet money on blackjack \n($)crash = Bet money on crash \n\n**Stocks** \n($)buy = Purchase a stock at its market price (24/7) \n($)sell = Sell a stock at its market price (24/7) \n($)portfolio = View your stock portfolio \n($)stock = View information on a stock \n($)exchange = Exchange a currency at its current rate \n($)currency = View all of your currency balances \n\n**Media** \n($)img = Sends an image in the server \n($)movie = Watch a movie in the server \n($)classmeme = Sends a class meme in the server \n($)news = View the latest news stories worldwide \n\n**Artificial Intelligence** \n($)gemini = Ask Google Gemini a prompt \n($)chat = Interact with Gemini Chat \n($)nameset = Set your name for Gemini Chat \n($)vision = Send an image to Gemini Chat \n($)visual = Analyze an image with Gemini \n($)image = Generate an image with AI \n($)think = View the reasoning behind the AI's response \n\n**Miscellaneous** \n($)topgg = Check out the bot's top.gg page \n($)count = Adds 1 to the Count"
     );
   }
 });
@@ -2606,7 +2606,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.13.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n **Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.15.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });
@@ -2874,6 +2874,14 @@ client.on("interactionCreate", async (interaction) => {
 
   if (interaction.commandName === "leaderboard") {
     await getBalanceLeaderboardSlash(interaction);
+  }
+});
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "netleaderboard") {
+    await getNetWorthLeaderboardSlash(interaction);
   }
 });
 
@@ -3201,7 +3209,7 @@ async function getBalanceLeaderboard() {
     const username = user.username;
     const balance = user.balance.toFixed(2);
 
-    leaderboardString += `${index + 1}. **${username}:** $${balance}\n`;
+    leaderboardString += `${index + 1}\. **${username}:** $${balance}\n`;
   });
 
   return leaderboardString;
@@ -3378,7 +3386,7 @@ async function getNetWorthLeaderboard() {
 
     let leaderboardString = "";
     leaderboardData.slice(0, 10).forEach((entry, index) => {
-      leaderboardString += `${index + 1}. **${entry.username}:** $${entry.netWorth.toFixed(2)}\n`;
+      leaderboardString += `${index + 1}\. **${entry.username}:** $${entry.netWorth.toFixed(2)}\n`;
     });
 
     return leaderboardString || "The leaderboard is currently empty.";
@@ -4046,6 +4054,62 @@ async function getBalanceLeaderboardSlash(interaction) {
     .join("\n");
 
   return interaction.reply("**Global Leaderboard:**\n" + leaderboardString);
+}
+
+async function getNetWorthLeaderboardSlash(interaction) {
+  try {
+    const users = await User.find();
+    if (!users.length) {
+      return interaction.reply("No leaderboard data available.");
+    }
+
+    const leaderboardData = await Promise.all(
+      users.map(async (user) => {
+        let totalNetWorth = { USD: user.balance };
+
+        const otherStocks = user.stocks.filter((stock) => stock.symbol !== "KGB");
+        for (const stock of otherStocks) {
+          const currentPrice = await fetchStockPrice(stock.symbol);
+          const stockCurrency = await fetchStockCurrency(stock.symbol);
+
+          if (currentPrice && stockCurrency) {
+            const stockValue = currentPrice * stock.amount;
+            if (!totalNetWorth[stockCurrency]) totalNetWorth[stockCurrency] = 0;
+            totalNetWorth[stockCurrency] += stockValue;
+          }
+        }
+
+        const kgbStock = user.stocks.find((stock) => stock.symbol === "KGB");
+        if (kgbStock) {
+          const kgbData = await KingBotStock.findOne({ symbol: "KGB" });
+          if (kgbData) {
+            const kgbValue = kgbData.price * kgbStock.amount;
+            if (!totalNetWorth[kgbData.currency]) totalNetWorth[kgbData.currency] = 0;
+            totalNetWorth[kgbData.currency] += kgbValue;
+          }
+        }
+
+        const totalUSDNetWorth = totalNetWorth["USD"] || 0;
+        return { username: user.username || `Unknown User (${user.discordId})`, netWorth: totalUSDNetWorth };
+      })
+    );
+
+    leaderboardData.sort((a, b) => b.netWorth - a.netWorth);
+
+    if (!leaderboardData.length) {
+      return interaction.reply("No leaderboard data available.");
+    }
+
+    const leaderboardString = leaderboardData
+      .slice(0, 10)
+      .map((entry, index) => `${index + 1}. **${entry.username}:** $${entry.netWorth.toFixed(2)}`)
+      .join("\n");
+
+    return interaction.reply("**Global Leaderboard (Net Worth):**\n" + leaderboardString);
+  } catch (error) {
+    console.error("Error generating leaderboard:", error);
+    return interaction.reply("Error generating leaderboard. Please try again later.");
+  }
 }
 
 //Temporary

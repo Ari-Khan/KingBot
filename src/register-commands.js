@@ -149,6 +149,11 @@ const commands = [
   },
 
   {
+    name: "netleaderboard",
+    description: "Displays the global net worth leaderboard",
+  },
+
+  {
     name: "coinflip",
     description: "Flip a coin and place a bet on heads or tails.",
     options: [

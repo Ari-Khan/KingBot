@@ -1015,7 +1015,7 @@ client.on("messageCreate", async (message) => {
     const crashPoint = 0.01 + 0.99 / Math.random();
 
     const crashMessage = await message.reply(
-      `🚀 Crash 🚀
+      `**🚀 Crash 🚀**
       \nCurrent multiplier: **1x** 
       \nProfit: **$0** 
       \n\nCrash game starting...`
@@ -1047,7 +1047,7 @@ client.on("messageCreate", async (message) => {
         crashed = true;
         reactionCollector.stop();
         crashMessage.edit(
-          `💥 Crash! 💥
+          `**💥 Crash! 💥**
           \nThe game crashed at **${crashPoint.toFixed(2)}x**! 
           \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(
             2
@@ -1058,7 +1058,7 @@ client.on("messageCreate", async (message) => {
       }
 
       crashMessage.edit(
-        `🚀 Crash 🚀
+        `**🚀 Crash 🚀**
         \nCurrent multiplier: **${multiplier.toFixed(1)}x** 
         \nProfit: **$${profit.toFixed(2)}** 
         \n\nType \`$cashout\` to cash out your profits.`
@@ -1079,7 +1079,7 @@ client.on("messageCreate", async (message) => {
         let profit = payout - betAmount;
 
         crashMessage.edit(
-          `✅ Success! ✅
+          `**✅ Success! ✅**
           \nYou cashed out at **${multiplier.toFixed(1)}x**! 
           \n\n**You won $${profit.toFixed(2)}!** Your new balance is $${user.balance.toFixed(2)}.`
         );
@@ -1095,7 +1095,7 @@ client.on("messageCreate", async (message) => {
           await user.save();
 
           crashMessage.edit(
-            `🪐 Success! 🪐
+            `**🪐 Success! 🪐**
             \nYou cashed out at **${multiplier.toFixed(1)}x**! 
             \n\n**You won $${finalProfit.toFixed(2)}!** Your final balance is $${user.balance.toFixed(2)}.`
           );

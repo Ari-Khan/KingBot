@@ -1152,10 +1152,10 @@ client.on("messageCreate", async (message) => {
       await user.save();
 
       message.reply(
-        `🎯 Success! 🎯
-        \nTarget multiplier: **${targetMultiplier.toFixed(2)}x** 
-        \nCrash point: **${crashPoint.toFixed(2)}x** 
-        \n\n**You won $${profit.toFixed(2)}!** Your new balance is $${user.balance.toFixed(2)}.`
+        `**🎯 Success! 🎯**
+        Target multiplier: **${targetMultiplier.toFixed(2)}x** 
+        Crash point: **${crashPoint.toFixed(2)}x** 
+        \n**You won $${profit.toFixed(2)}!** Your new balance is $${user.balance.toFixed(2)}.`
       );
     } else {
       message.reply(

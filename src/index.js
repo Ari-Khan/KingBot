@@ -1015,7 +1015,10 @@ client.on("messageCreate", async (message) => {
     const crashPoint = 0.01 + 0.99 / Math.random();
 
     const crashMessage = await message.reply(
-      `💥 Current multiplier: **1x** \n\nProfit: **$0** \n\nCrash game starting...`
+      `🚀 Crash 🚀
+      \nCurrent multiplier: **1x** 
+      \nProfit: **$0** 
+      \n\nCrash game starting...`
     );
     await crashMessage.react("✅");
 
@@ -1044,9 +1047,9 @@ client.on("messageCreate", async (message) => {
         crashed = true;
         reactionCollector.stop();
         crashMessage.edit(
-          `💥 The game crashed at **${crashPoint.toFixed(
-            2
-          )}x**! \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(
+          `💥 Crash! 💥
+          \nThe game crashed at **${crashPoint.toFixed(2)}x**! 
+          \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(
             2
           )}.`
         );
@@ -1055,11 +1058,10 @@ client.on("messageCreate", async (message) => {
       }
 
       crashMessage.edit(
-        `💥 Current multiplier: **${multiplier.toFixed(
-          1
-        )}x** \n\nProfit: **$${profit.toFixed(
-          2
-        )}** \n\nType \`$cashout\` to cash out your profits.`
+        `🚀 Crash 🚀
+        \nCurrent multiplier: **${multiplier.toFixed(1)}x** 
+        \nProfit: **$${profit.toFixed(2)}** 
+        \n\nType \`$cashout\` to cash out your profits.`
       );
 
       if (Math.floor(multiplier) !== Math.floor(multiplier - 0.1)) {
@@ -1077,11 +1079,9 @@ client.on("messageCreate", async (message) => {
         let profit = payout - betAmount;
 
         crashMessage.edit(
-          `✅ You cashed out at **${multiplier.toFixed(
-            1
-          )}x**! \n\n**You won $${profit.toFixed(
-            2
-          )}!** Your new balance is $${user.balance.toFixed(2)}.`
+          `✅ Success! ✅
+          \nYou cashed out at **${multiplier.toFixed(1)}x**! 
+          \n\n**You won $${profit.toFixed(2)}!** Your new balance is $${user.balance.toFixed(2)}.`
         );
 
         crashed = true;
@@ -1095,15 +1095,76 @@ client.on("messageCreate", async (message) => {
           await user.save();
 
           crashMessage.edit(
-            `✅ Final Result: You cashed out at **${multiplier.toFixed(
-              1
-            )}x**! \n\n**You won $${finalProfit.toFixed(
-              2
-            )}!** Your final balance is $${user.balance.toFixed(2)}.`
+            `🪐 Success! 🪐
+            \nYou cashed out at **${multiplier.toFixed(1)}x**! 
+            \n\n**You won $${finalProfit.toFixed(2)}!** Your final balance is $${user.balance.toFixed(2)}.`
           );
         }, 100);
       }
     });
+  }
+});
+
+client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("$limbo")) {
+    let args = message.content.split(" ");
+
+    if (args.length < 3) {
+      message.reply(
+        "Please use `$limbo (bet amount) (multiplier)` to place a bet."
+      );
+      return;
+    }
+
+    let betAmount = parseFloat(args[1]);
+    let targetMultiplier = parseFloat(args[2]);
+
+    if (isNaN(betAmount) || betAmount <= 0) {
+      message.reply("Please enter a valid bet amount.");
+      return;
+    }
+
+    if (isNaN(targetMultiplier) || targetMultiplier < 1.01) {
+      message.reply("Please enter a valid multiplier (minimum 1.01x).");
+      return;
+    }
+
+    let user = await User.findOne({ discordId: message.author.id });
+
+    if (!user) {
+      message.reply("You need to create an account first with $start.");
+      return;
+    }
+
+    if (user.balance < betAmount) {
+      message.reply("You do not have enough balance to place this bet.");
+      return;
+    }
+
+    user.balance -= betAmount;
+    await user.save();
+
+    const crashPoint = 0.01 + 0.99 / Math.random();
+    let profit = (targetMultiplier - 1) * betAmount;
+
+    if (targetMultiplier <= crashPoint) {
+      user.balance += betAmount + profit;
+      await user.save();
+
+      message.reply(
+        `🎯 Success! 🎯
+        \nTarget multiplier: **${targetMultiplier.toFixed(2)}x** 
+        \nCrash point: **${crashPoint.toFixed(2)}x** 
+        \n\n**You won $${profit.toFixed(2)}!** Your new balance is $${user.balance.toFixed(2)}.`
+      );
+    } else {
+      message.reply(
+        `💥 Failure! 💥
+        \nTarget multiplier: **${targetMultiplier.toFixed(2)}x** 
+        \nCrash point: **${crashPoint.toFixed(2)}x** 
+        \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(2)}.`
+      );
+    }
   }
 });
 
@@ -3442,7 +3503,6 @@ async function fetchStockPrice(symbol) {
     return null;
   }
 }
-
 
 async function getStockName(symbol) {
   try {

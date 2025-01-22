@@ -1142,10 +1142,7 @@ client.on("messageCreate", async (message) => {
       );
     } else {
       message.reply(
-        `💥 Failure! 💥
-        \nTarget multiplier: **${targetMultiplier.toFixed(2)}x** 
-        \nCrash point: **${crashPoint.toFixed(2)}x** 
-        \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(2)}.`
+        `**💥 Failure! 💥** \nTarget multiplier: **${targetMultiplier.toFixed(2)}x** \nCrash point: **${crashPoint.toFixed(2)}x** \n\n**You lost $${betAmount}!** Your new balance is $${user.balance.toFixed(2)}.`
       );
     }
   }

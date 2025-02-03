@@ -95,7 +95,7 @@ const safetySettings = [
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const fileManager = new GoogleAIFileManager(process.env.GOOGLE_API_KEY);
 const gemini20Flash = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-exp-latest",
+  model: "gemini-2.0-flash-exp",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,
@@ -111,7 +111,7 @@ const gemini15Pro = genAI.getGenerativeModel({
   },
 });
 const gemini20FlashThinking = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-thinking-exp-latest",
+  model: "gemini-2.0-flash-thinking-exp-01-21",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,

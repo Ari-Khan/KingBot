@@ -95,7 +95,7 @@ const safetySettings = [
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const fileManager = new GoogleAIFileManager(process.env.GOOGLE_API_KEY);
 const gemini20Flash = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-exp",
+  model: "gemini-2.0-flash-exp-latest",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,
@@ -111,7 +111,7 @@ const gemini15Pro = genAI.getGenerativeModel({
   },
 });
 const gemini20FlashThinking = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-thinking-exp",
+  model: "gemini-2.0-flash-thinking-exp-latest",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,
@@ -238,7 +238,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.16.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.16.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.6 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });
@@ -2647,7 +2647,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.16.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.0.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.5 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.16.8 \n\n**Discord.js Version** \n14.17.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.9 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.4.7 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.9.6 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.21.0"
     );
   }
 });

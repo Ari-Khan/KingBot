@@ -21,13 +21,13 @@
     "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "fs-extra": "^11.3.0",
-    "mongoose": "^8.9.5",
+    "mongoose": "^8.9.6",
     "node-fetch": "^3.3.2",
     "node.js": "^0.0.1-security",
     "nodemon": "^3.1.9",
-    "npm": "^11.0.0",
+    "npm": "^11.1.0",
     "ollama": "^0.5.12",
-    "openai": "^4.79.4",
+    "openai": "^4.82.0",
     "yahoo-finance2": "^2.13.3"
   }
 }

@@ -18,16 +18,16 @@
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "discord.js": "^14.17.3",
+    "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
     "fs-extra": "^11.3.0",
-    "mongoose": "^8.9.7",
+    "mongoose": "^8.10.1",
     "node-fetch": "^3.3.2",
     "node.js": "^0.0.1-security",
     "nodemon": "^3.1.9",
     "npm": "^11.1.0",
-    "ollama": "^0.5.12",
-    "openai": "^4.83.0",
+    "ollama": "^0.5.13",
+    "openai": "^4.85.1",
     "yahoo-finance2": "^2.13.3"
   }
 }

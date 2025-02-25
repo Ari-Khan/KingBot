@@ -26,7 +26,7 @@
     "node.js": "^0.0.1-security",
     "nodemon": "^3.1.9",
     "npm": "^11.1.0",
-    "ollama": "^0.5.13",
+    "ollama": "^0.5.14",
     "openai": "^4.85.1",
     "yahoo-finance2": "^2.13.3"
   }

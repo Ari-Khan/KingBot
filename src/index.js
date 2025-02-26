@@ -256,7 +256,7 @@ client.on("messageCreate", (message) => {
   if (message.content === "$adminhelp") {
     if (message.author.id === "786745378212282368") {
       message.reply(
-        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiunban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt \n\n**Miscellaneous** \n($)adminreact = Make KingBot react to a message"
+        "**List of admin commands:** \n\n**Information/Management** \n($)adminhelp = List of Admin Commands \n($)adminfixfields = Fix user fields \n\n**Economy** \n($)adminpay = Pay a user any amount of money \n\n**Stocks** \n($)adminkgbstocksplit = Perform a split on KGB stock \n\n**Moderation** \n($)admintimeout = Timeout a user \n($)adminuntimeout = Untimeout a user \n($)adminaiban = Ban a user from using AI features \n($)adminaiunban = Unban a user from using AI features \n\n**Artificial Intelligence** \n($)adminchatgpt = Ask ChatGPT a prompt \n($)admingeminipro = Ask Gemini Pro a prompt \n($)adminllama = Ask Meta LLaMa a prompt \n($)adminzephyr = Ask Zephyr a prompt \n\n**Miscellaneous** \n($)adminreact = Make KingBot react to a message"
       );
     } else {
       message.reply("You are not authorized to use this command.");
@@ -2427,7 +2427,7 @@ client.on("messageCreate", async (message) => {
 
     if (!prompt) {
       message.reply(
-        "Please use `$admingeminipro (prompt)` to send Gemini 1.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+        "Please use `$admingeminipro (prompt)` to send Gemini 2.0 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
       );
       return;
     }
@@ -2462,7 +2462,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 1.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.0 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
       );
     }
   }

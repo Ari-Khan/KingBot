@@ -103,7 +103,7 @@ const gemini20Flash = genAI.getGenerativeModel({
   },
 });
 const gemini15Pro = genAI.getGenerativeModel({ 
-  model: "gemini-1.5-pro-latest",
+  model: "gemini-2.0-pro-exp",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,
@@ -111,7 +111,7 @@ const gemini15Pro = genAI.getGenerativeModel({
   },
 });
 const gemini20FlashThinking = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-thinking-exp-01-21",
+  model: "gemini-2.0-flash-thinking-exp",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,

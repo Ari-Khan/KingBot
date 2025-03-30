@@ -604,7 +604,11 @@ export const randomFactList = [
   'The word "nerd" was first coined by Dr. Seuss in his 1950 book If I Ran the Zoo.',
   "More people have walked on the Moon than have ever dived to the deepest part of the ocean, the Mariana Trench, which is nearly 36,000 feet deep.",
   "J.K. Rowling, the author of the *Harry Potter* series, was rejected by 12 publishers before finally finding one willing to print the first book.",
-  "Despite the United States spending the most money of healthcare per capita globally, Puerto Rico (79.72), Chile (79.52), and Turkey (78.48) all have higher life expectancies compared to the United States' 77.43 years."
+  "Despite the United States spending the most money of healthcare per capita globally, Puerto Rico (79.72), Chile (79.52), and Turkey (78.48) all have higher life expectancies compared to the United States' 77.43 years.",
+  "Netflix was founded a year before Google.",
+  "There are only 25 blimps in the entire world.",
+  "The entire state of Wyoming only has 2 escalators.",
+  "If you have $10 in your wallet and no debts, you are wealthier than 25% of Americans."
 ];
 
 export const randomAriQuoteList = [

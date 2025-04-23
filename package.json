@@ -24,7 +24,7 @@
     "mongoose": "^8.13.2",
     "node-fetch": "^3.3.2",
     "node.js": "^0.0.1-security",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "ollama": "^0.5.15",
     "openai": "^4.95.0",
     "yahoo-finance2": "^2.13.3"

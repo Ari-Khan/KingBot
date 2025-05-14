@@ -1935,7 +1935,7 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$gemini (prompt)` to send Gemini 2.0 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply("Please use `$gemini (prompt)` to send Gemini 2.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
       return;
     }
 
@@ -1952,7 +1952,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 2.0 Flash is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occured."
       );
     }
   }
@@ -2073,7 +2073,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 2.0 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }
@@ -2427,7 +2427,7 @@ client.on("messageCreate", async (message) => {
 
     if (!prompt) {
       message.reply(
-        "Please use `$admingeminipro (prompt)` to send Gemini 2.0 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+        "Please use `$admingeminipro (prompt)` to send Gemini 2.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
       );
       return;
     }
@@ -2462,7 +2462,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 2.0 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
       );
     }
   }

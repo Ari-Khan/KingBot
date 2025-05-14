@@ -94,7 +94,7 @@ const safetySettings = [
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const fileManager = new GoogleAIFileManager(process.env.GOOGLE_API_KEY);
-const gemini20Flash = genAI.getGenerativeModel({
+const gemini25Flash = genAI.getGenerativeModel({
   model: "gemini-2.5-flash-preview-04-17",
   safetySettings: safetySettings,
   generationConfig: {
@@ -102,7 +102,7 @@ const gemini20Flash = genAI.getGenerativeModel({
     temperature: 1.25,
   },
 });
-const gemini15Pro = genAI.getGenerativeModel({ 
+const gemini25Pro = genAI.getGenerativeModel({ 
   model: "gemini-2.5-pro-preview-05-06",
   safetySettings: safetySettings,
   generationConfig: {
@@ -1940,7 +1940,7 @@ client.on("messageCreate", async (message) => {
     }
 
     try {
-      const result = await gemini20Flash.generateContent(prompt);
+      const result = await gemini25Flash.generateContent(prompt);
       const response = result.response;
       const text = response.text();
 
@@ -2039,7 +2039,7 @@ client.on("messageCreate", async (message) => {
         parts: [{ text: prompt }],
       });
 
-      const chat = gemini20Flash.startChat({
+      const chat = gemini25Flash.startChat({
         history: history,
       });
 
@@ -2148,7 +2148,7 @@ client.on("messageCreate", async (message) => {
         },
       }];
 
-      const result = await gemini20Flash.generateContent(input);
+      const result = await gemini25Flash.generateContent(input);
       const responseText = result.response.text();
 
       const chunks = chunkText(responseText);
@@ -2257,7 +2257,7 @@ client.on("messageCreate", async (message) => {
         },
       ];
 
-      const result = await gemini20Flash.generateContent(input);
+      const result = await gemini25Flash.generateContent(input);
       const responseText = result.response.text();
 
       await ChatHistory.create({
@@ -2433,7 +2433,7 @@ client.on("messageCreate", async (message) => {
     }
 
     try {
-      const result = await gemini15Pro.generateContent(prompt);
+      const result = await gemini25Pro.generateContent(prompt);
       const response = result.response;
       const text = response.text();
 

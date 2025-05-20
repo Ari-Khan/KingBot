@@ -3670,7 +3670,6 @@ async function updateKGBPrice() {
       }
 
       await stock.save();
-      console.log(`KGB stock price updated to $${stock.price.toFixed(2)}`);
     } catch (error) {
       console.error("Error updating stock price (base effect):", error);
     }
@@ -3687,7 +3686,6 @@ async function updateKGBPrice() {
       }
 
       await stock.save();
-      console.log(`KGB stock price updated to $${stock.price.toFixed(2)} (minute effect)`);
     } catch (error) {
       console.error("Error updating stock price (minute effect):", error);
     }
@@ -3710,7 +3708,6 @@ async function updateKGBPrice() {
 
           stock.lastHourChange = now;
           await stock.save();
-          console.log(`KGB stock price updated to $${stock.price.toFixed(2)} (hour effect)`);
         }
       } else {
         stock.lastHourChange = now;
@@ -3739,7 +3736,6 @@ async function updateKGBPrice() {
 
           stock.lastHalfDayChange = now;
           await stock.save();
-          console.log(`KGB stock price updated to $${stock.price.toFixed(2)} (half-day effect)`);
         }
       } else {
         stock.lastHalfDayChange = now;

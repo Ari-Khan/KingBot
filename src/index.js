@@ -238,7 +238,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.8 \n\n**Discord.js Version** \n14.19.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.5.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.14.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.8 \n\n**Discord.js Version** \n14.19.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.5.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.15.0 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
     );
   }
 });
@@ -2647,7 +2647,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.8 \n\n**Discord.js Version** \n14.19.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.5.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.14.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.8 \n\n**Discord.js Version** \n14.19.3 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n16.5.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.15.0 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
     );
   }
 });

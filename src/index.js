@@ -103,7 +103,7 @@ const gemini25Flash = genAI.getGenerativeModel({
   },
 });
 const gemini25Pro = genAI.getGenerativeModel({ 
-  model: "gemini-2.5-pro-preview-05-06",
+  model: "gemini-2.5-pro-preview-06-05",
   safetySettings: safetySettings,
   generationConfig: {
     maxOutputTokens: 8192,

@@ -19,14 +19,14 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "discord.js": "^14.21.0",
-    "dotenv": "^17.2.0",
-    "fs-extra": "^11.3.0",
-    "mongoose": "^8.16.3",
+    "dotenv": "^17.2.1",
+    "fs-extra": "^11.3.1",
+    "mongoose": "^8.17.2",
     "node-fetch": "^3.3.2",
     "node.js": "^0.0.1-security",
     "nodemon": "^3.1.10",
-    "ollama": "^0.5.16",
-    "openai": "^5.9.1",
+    "ollama": "^0.5.17",
+    "openai": "^5.13.1",
     "yahoo-finance2": "^2.13.3"
   }
 }

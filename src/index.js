@@ -93,7 +93,7 @@ const safetySettings = [
 ];
 
 async function generateWithGemini25Flash(prompt) {
-  const response = await ai.models.generateContent({
+  const response = await googleGenAIClient.models.generateContent({
     model: "gemini-2.5-flash",
     contents: prompt,
     config: {

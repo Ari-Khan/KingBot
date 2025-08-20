@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
-import GenAIClient from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { OpenAI } from "openai";
 import { Ollama } from "ollama";
 import yahooFinance from "yahoo-finance2";
@@ -83,7 +83,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const genAI = new GenAIClient({ apiKey: process.env.GOOGLE_API_KEY });
+const GoogleGenAI = new GenAIClient({ apiKey: process.env.GOOGLE_API_KEY });
 
 const safetySettings = [
   { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -93,7 +93,7 @@ const safetySettings = [
 ];
 
 const generateWithGemini25Flash = async (prompt) => {
-  return genAI.generateText({
+  return GoogleGenAI.generateText({
     model: "gemini-2.5-flash-preview-05-20",
     prompt,
     safetySettings,
@@ -103,7 +103,7 @@ const generateWithGemini25Flash = async (prompt) => {
 };
 
 const generateWithGemini25Pro = async (prompt) => {
-  return genAI.generateText({
+  return GoogleGenAI.generateText({
     model: "gemini-2.5-pro-preview-06-05",
     prompt,
     safetySettings,
@@ -113,7 +113,7 @@ const generateWithGemini25Pro = async (prompt) => {
 };
 
 const generateWithGemini20FlashThinking = async (prompt) => {
-  return genAI.generateText({
+  return GoogleGenAI.generateText({
     model: "gemini-2.0-flash-thinking-exp",
     prompt,
     safetySettings,
@@ -130,7 +130,7 @@ const visionWithGemini25Flash = async (prompt, imageAttachment) => {
   fs.writeFileSync(tempFilePath, imageBuffer);
 
   try {
-    const result = await genAI.generateWithFiles({
+    const result = await GoogleGenAI.generateWithFiles({
       model: "gemini-2.5-flash-preview-05-20",
       prompt,
       files: [

@@ -93,7 +93,7 @@ const safetySettings = [
 ];
 
 const generateWithGemini25Flash = async (prompt) => {
-  return googleGenAIClient.generateText({
+  return googleGenAIClient.generateContent({
     model: "gemini-2.5-flash-preview-05-20",
     prompt,
     safetySettings,
@@ -103,7 +103,7 @@ const generateWithGemini25Flash = async (prompt) => {
 };
 
 const generateWithGemini25Pro = async (prompt) => {
-  return googleGenAIClient.generateText({
+  return googleGenAIClient.generateContent({
     model: "gemini-2.5-pro-preview-06-05",
     prompt,
     safetySettings,
@@ -113,7 +113,7 @@ const generateWithGemini25Pro = async (prompt) => {
 };
 
 const generateWithGemini20FlashThinking = async (prompt) => {
-  return googleGenAIClient.generateText({
+  return googleGenAIClient.generateContent({
     model: "gemini-2.0-flash-thinking-exp",
     prompt,
     safetySettings,
@@ -130,7 +130,7 @@ const visionWithGemini25Flash = async (prompt, imageAttachment) => {
   fs.writeFileSync(tempFilePath, imageBuffer);
 
   try {
-    const result = await googleGenAIClient.generateWithFiles({
+    const result = await googleGenAIClient.generateContent({
       model: "gemini-2.5-flash-preview-05-20",
       prompt,
       files: [
@@ -2145,7 +2145,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "There was an error processing your request. Please try again later."
+        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }
@@ -2221,7 +2221,7 @@ client.on("messageCreate", async (message) => {
       }
     } catch (error) {
       console.error("Error:", error);
-      message.reply("There was an error processing your request. Please try again later.");
+      message.reply("KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred.");
     }
   }
 });

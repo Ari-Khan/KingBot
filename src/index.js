@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GenAIClient } from "@google/genai";
+import GenAIClient from "@google/genai";
 import { OpenAI } from "openai";
 import { Ollama } from "ollama";
 import yahooFinance from "yahoo-finance2";

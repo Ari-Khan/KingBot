@@ -92,15 +92,17 @@ const safetySettings = [
   { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
 ];
 
-const generateWithGemini25Flash = async (prompt) => {
-  return googleGenAIClient.generateContent({
-    model: "gemini-2.5-flash-preview-05-20",
-    prompt,
-    safetySettings,
-    temperature: 1.25,
-    maxOutputTokens: 8192,
+async function generateWithGemini25Flash(prompt) {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      temperature: 0.1,
+    },
   });
-};
+
+  return response.output_text || response.text || response.output?.[0]?.content || "";
+}
 
 const generateWithGemini25Pro = async (prompt) => {
   return googleGenAIClient.generateContent({
@@ -1960,31 +1962,29 @@ client.on("messageCreate", async (message) => {
 
 //Artificial Intelligence
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$gemini")) {
-    const isBanned = await checkIfAIBanned(message);
-    if (isBanned) return;
+  if (!message.content.startsWith("$gemini")) return;
 
-    const prompt = message.content.slice("$gemini".length).trim();
+  const isBanned = await checkIfAIBanned(message);
+  if (isBanned) return;
 
-    if (!prompt) {
-      message.reply(
-        "Please use `$gemini (prompt)` to send Gemini 2.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-      );
-      return;
-    }
+  const prompt = message.content.slice("$gemini".length).trim();
+  if (!prompt) {
+    message.reply(
+      "Please use `$gemini (prompt)` to send Gemini 2.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+    );
+    return;
+  }
 
-    try {
-      const result = await generateWithGemini25Flash(prompt);
-      const text = result.outputText || result.output || "";
+  try {
+    const text = await generateWithGemini25Flash(prompt);
 
-      const chunks = chunkText(text);
-      for (const chunk of chunks) await message.reply(chunk);
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
-      );
-    }
+    const chunks = chunkText(text);
+    for (const chunk of chunks) await message.reply(chunk);
+  } catch (error) {
+    console.error("Error:", error);
+    message.reply(
+      "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+    );
   }
 });
 

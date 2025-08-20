@@ -2,12 +2,10 @@ import dotenv from "dotenv";
 import { Client, GatewayIntentBits, ActivityType, EmbedBuilder } from "discord.js";
 import mongoose from "mongoose";
 import fetch from "node-fetch";
-import fs from 'fs-extra';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
-import { GoogleAIFileManager } from "@google/generative-ai/server";
+import fs from "fs-extra";
+import path from "path";
+import { fileURLToPath } from "url";
+import { GenAIClient } from "@google/genai";
 import { OpenAI } from "openai";
 import { Ollama } from "ollama";
 import yahooFinance from "yahoo-finance2";
@@ -85,39 +83,73 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const genAI = new GenAIClient({ apiKey: process.env.GOOGLE_API_KEY });
+
 const safetySettings = [
-  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
-  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH },
-  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+  { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+  { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+  { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
 ];
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-const fileManager = new GoogleAIFileManager(process.env.GOOGLE_API_KEY);
-const gemini25Flash = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash-preview-05-20",
-  safetySettings: safetySettings,
-  generationConfig: {
-    maxOutputTokens: 8192,
+const generateWithGemini25Flash = async (prompt) => {
+  return genAI.generateText({
+    model: "gemini-2.5-flash-preview-05-20",
+    prompt,
+    safetySettings,
     temperature: 1.25,
-  },
-});
-const gemini25Pro = genAI.getGenerativeModel({ 
-  model: "gemini-2.5-pro-preview-06-05",
-  safetySettings: safetySettings,
-  generationConfig: {
     maxOutputTokens: 8192,
+  });
+};
+
+const generateWithGemini25Pro = async (prompt) => {
+  return genAI.generateText({
+    model: "gemini-2.5-pro-preview-06-05",
+    prompt,
+    safetySettings,
     temperature: 1.25,
-  },
-});
-const gemini20FlashThinking = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-thinking-exp",
-  safetySettings: safetySettings,
-  generationConfig: {
     maxOutputTokens: 8192,
+  });
+};
+
+const generateWithGemini20FlashThinking = async (prompt) => {
+  return genAI.generateText({
+    model: "gemini-2.0-flash-thinking-exp",
+    prompt,
+    safetySettings,
     temperature: 1.25,
-  },
-});
+    maxOutputTokens: 8192,
+  });
+};
+
+const visionWithGemini25Flash = async (prompt, imageAttachment) => {
+  const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
+  const imageBuffer = Buffer.from(imageArrayBuffer);
+
+  const tempFilePath = path.join(__dirname, "temp_image.png");
+  fs.writeFileSync(tempFilePath, imageBuffer);
+
+  try {
+    const result = await genAI.generateWithFiles({
+      model: "gemini-2.5-flash-preview-05-20",
+      prompt,
+      files: [
+        {
+          name: imageAttachment.name || "image.png",
+          type: imageAttachment.contentType,
+          uri: `file://${tempFilePath}`,
+        },
+      ],
+      safetySettings,
+      temperature: 1.25,
+      maxOutputTokens: 8192,
+    });
+
+    return result.output[0].content[0].text;
+  } finally {
+    fs.unlinkSync(tempFilePath);
+  }
+};
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const ollama = new Ollama({ baseURL: "http://localhost:11434/api/generate" });
@@ -1935,24 +1967,22 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$gemini".length).trim();
 
     if (!prompt) {
-      message.reply("Please use `$gemini (prompt)` to send Gemini 2.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      message.reply(
+        "Please use `$gemini (prompt)` to send Gemini 2.5 Flash a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+      );
       return;
     }
 
     try {
-      const result = await gemini25Flash.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
+      const result = await generateWithGemini25Flash(prompt);
+      const text = result.outputText || result.output || "";
 
       const chunks = chunkText(text);
-
-      for (const chunk of chunks) {
-        await message.reply(chunk);
-      }
+      for (const chunk of chunks) await message.reply(chunk);
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }
@@ -1974,33 +2004,33 @@ client.on("messageCreate", async (message) => {
 
     try {
       const user = await User.findOne({ discordId: message.author.id });
-      const userName = user && user.name ? user.name : message.author.username + ", an Unnamed User";
+      const userName = user?.name || message.author.username + ", an Unnamed User";
 
       const now = new Date();
 
       const dateOptions = {
-        timeZone: 'America/New_York',
-        weekday: 'long',
-        month: 'long',
-        day: '2-digit',
-        year: 'numeric'
+        timeZone: "America/New_York",
+        weekday: "long",
+        month: "long",
+        day: "2-digit",
+        year: "numeric",
       };
 
       const timeOptions = {
-        timeZone: 'America/New_York',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
       };
 
-      const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
-      const formattedTime = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+      const formattedDate = new Intl.DateTimeFormat("en-US", dateOptions).format(now);
+      const formattedTime = new Intl.DateTimeFormat("en-US", timeOptions).format(now);
 
       const humanConditions = [
         "Background Information: ",
         "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
-        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. Ari likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolous for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. Ari has a younger sister. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
+        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. Ari likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolious for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. Ari has a younger sister. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
         "Other users do not have these experiences, and Ari is the only user that fits this description.",
         "Do not address other users with Ari's information.",
         "Setting: ",
@@ -2021,10 +2051,7 @@ client.on("messageCreate", async (message) => {
         `You are currently talking to ${userName} (If this is not "Ari", even if it is null or unnamed user, it is not Ari).`,
       ];
 
-      const humanPrompt =
-        humanConditions.join(" ") +
-        ". Now answer this: " +
-        prompt;
+      const humanPrompt = humanConditions.join(" ") + ". Now answer this: " + prompt;
 
       const historyDocuments = await ChatHistory.find()
         .sort({ createdAt: -1 })
@@ -2033,43 +2060,22 @@ client.on("messageCreate", async (message) => {
         role: "user",
         parts: [{ text: doc.message }],
       }));
+      history.push({ role: "user", parts: [{ text: prompt }] });
 
-      history.push({
-        role: "user",
-        parts: [{ text: prompt }],
-      });
-
-      const chat = gemini25Flash.startChat({
-        history: history,
-      });
-
-      let result = await chat.sendMessage(humanPrompt);
-      const botResponse = result.response.text();
+      const result = await generateWithGemini25Flash(humanPrompt, { history });
+      const botResponse = result.outputText || result.output || "";
 
       const chunks = chunkText(botResponse);
+      for (const chunk of chunks) await message.reply(chunk);
 
-      for (const chunk of chunks) {
-        await message.reply(chunk);
-      }
-
-      await ChatHistory.create({
-        user: message.author.username,
-        message: prompt,
-      });
-
-      await ChatHistory.create({
-        user: "Ari's Son",
-        message: botResponse,
-      });
+      await ChatHistory.create({ user: message.author.username, message: prompt });
+      await ChatHistory.create({ user: "Ari's Son", message: botResponse });
 
       const messageCount = await ChatHistory.countDocuments();
       if (messageCount > 500) {
-        const oldestMessage = await ChatHistory.findOne().sort({
-          createdAt: 1,
-        });
+        const oldestMessage = await ChatHistory.findOne().sort({ createdAt: 1 });
         await ChatHistory.deleteOne({ _id: oldestMessage._id });
       }
-
     } catch (error) {
       console.error("Error:", error);
       message.reply(
@@ -2119,49 +2125,28 @@ client.on("messageCreate", async (message) => {
     const prompt = message.content.slice("$visual".length).trim();
 
     if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
-      return message.reply("Please provide an image attachment with your `$visual` command.");
+      return message.reply(
+        "Please provide an image attachment with your `$visual` command."
+      );
     }
 
     if (!prompt) {
-      return message.reply("Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return message.reply(
+        "Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+      );
     }
 
     try {
-      const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
-      const imageBuffer = Buffer.from(imageArrayBuffer);
-
-      const tempFilePath = path.join(__dirname, 'temp_image.png');
-      fs.writeFileSync(tempFilePath, imageBuffer);
-
-      const uploadResult = await fileManager.uploadFile(tempFilePath, {
-        mimeType: imageAttachment.contentType,
-        displayName: imageAttachment.name || "Uploaded Image",
-      });
-
-      const fileUri = uploadResult.file.uri;
-      console.log(`Uploaded file ${uploadResult.file.displayName} as: ${fileUri}`);
-
-      const input = [prompt, {
-        fileData: {
-          fileUri: fileUri,
-          mimeType: imageAttachment.contentType,
-        },
-      }];
-
-      const result = await gemini25Flash.generateContent(input);
-      const responseText = result.response.text();
-
-      const chunks = chunkText(responseText);
-
+      const text = await visionWithGemini25Flash(prompt, imageAttachment);
+      const chunks = chunkText(text);
       for (const chunk of chunks) {
         await message.reply(chunk);
       }
-
-      fs.unlinkSync(tempFilePath);
-
     } catch (error) {
       console.error("Error:", error);
-      message.reply("There was an error processing your request. Please try again later.");
+      message.reply(
+        "There was an error processing your request. Please try again later."
+      );
     }
   }
 });
@@ -2179,7 +2164,9 @@ client.on("messageCreate", async (message) => {
     }
 
     if (!prompt) {
-      return message.reply("Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed.");
+      return message.reply(
+        "Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+      );
     }
 
     try {
@@ -2187,30 +2174,26 @@ client.on("messageCreate", async (message) => {
       const userName = user && user.name ? user.name : message.author.username + ", an Unnamed User";
 
       const now = new Date();
-
-      const dateOptions = {
+      const formattedDate = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/New_York',
         weekday: 'long',
         month: 'long',
         day: '2-digit',
         year: 'numeric',
-      };
+      }).format(now);
 
-      const timeOptions = {
+      const formattedTime = new Intl.DateTimeFormat('en-US', {
         timeZone: 'America/New_York',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
         hour12: true,
-      };
-
-      const formattedDate = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
-      const formattedTime = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+      }).format(now);
 
       const visionConditions = [
         "Background Information: ",
         "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
-        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. Ari likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolous for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
+        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. He likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolous for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
         "Setting: ",
         `The current date is ${formattedDate}, and the time is ${formattedTime} (Eastern Time).`,
         "Conditions: ",
@@ -2223,65 +2206,22 @@ client.on("messageCreate", async (message) => {
         "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
         "If you are talking to Ari, remember he is your creator, and don't speak in the third person, if they are not Ari, do not respond to them like you would to Ari.",
         "11 PM to 6 AM is your bedtime, and you should only be sleepy at night.",
-        `You are currently talking to ${userName}.`,
+        `You are currently talking to ${userName}.`
       ];
 
-      const visionPrompt =
-        visionConditions.join(" ") +
-        ". Prompt: " +
-        "Now answer this: " +
-        prompt;
+      const visionPrompt = visionConditions.join(" ") + ". Prompt: " + "Now answer this: " + prompt;
+      const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
 
-      const imageArrayBuffer = await fetch(imageAttachment.url).then((res) =>
-        res.arrayBuffer()
-      );
-      const imageBuffer = Buffer.from(imageArrayBuffer);
+      await ChatHistory.create({ user: message.author.username, message: prompt });
+      await ChatHistory.create({ user: "KingBot", message: text });
 
-      const tempFilePath = path.join(__dirname, "temp_image.png");
-      fs.writeFileSync(tempFilePath, imageBuffer);
-
-      const uploadResult = await fileManager.uploadFile(tempFilePath, {
-        mimeType: imageAttachment.contentType,
-        displayName: imageAttachment.name || "Uploaded Image",
-      });
-
-      const fileUri = uploadResult.file.uri;
-
-      const input = [
-        visionPrompt,
-        {
-          fileData: {
-            fileUri: fileUri,
-            mimeType: imageAttachment.contentType,
-          },
-        },
-      ];
-
-      const result = await gemini25Flash.generateContent(input);
-      const responseText = result.response.text();
-
-      await ChatHistory.create({
-        user: message.author.username,
-        message: prompt,
-      });
-
-      await ChatHistory.create({
-        user: "KingBot",
-        message: responseText,
-      });
-
-      const chunks = chunkText(responseText);
-
+      const chunks = chunkText(text);
       for (const chunk of chunks) {
         await message.reply(chunk);
       }
-
-      fs.unlinkSync(tempFilePath);
     } catch (error) {
       console.error("Error:", error);
-      message.reply(
-        "There was an error processing your request. Please try again later."
-      );
+      message.reply("There was an error processing your request. Please try again later.");
     }
   }
 });
@@ -2359,21 +2299,11 @@ client.on("messageCreate", async (message) => {
     }
 
     try {
-      const result = await gemini20FlashThinking.generateContent(prompt);
-      const response = result.response;
+      const result = await generateWithGemini20FlashThinking(prompt);
+      const responseText = result.output[0].content[0].text;
 
-      const thoughtProcess = response.candidates[0].content.parts[0].text || "No thought process available.";
-      const finalResponse = response.candidates[0].content.parts[1]?.text || "No response available.";
-
-      const completeFinalResponse = `**Response:** \n\n${finalResponse}`;
-      const finalResponseChunks = chunkText(completeFinalResponse);
-      for (const chunk of finalResponseChunks) {
-        await message.reply(chunk);
-      }
-
-      const completeThoughtProcess = `**Thought Process:** \n\n${thoughtProcess}`;
-      const thoughtProcessChunks = chunkText(completeThoughtProcess);
-      for (const chunk of thoughtProcessChunks) {
+      const chunks = chunkText(responseText);
+      for (const chunk of chunks) {
         await message.reply(chunk);
       }
 
@@ -2420,22 +2350,21 @@ client.on("messageCreate", async (message) => {
   if (message.content.startsWith("$admingeminipro")) {
     const prompt = message.content.slice("$admingeminipro".length).trim();
 
-    if (!message.author.id === "786745378212282368") {
+    if (message.author.id !== "786745378212282368") {
       message.reply("You are not authorized to use this command.");
       return;
     }
 
     if (!prompt) {
       message.reply(
-        "Please use `$admingeminipro (prompt)` to send Gemini 2.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed." 
+        "Please use `$admingeminipro (prompt)` to send Gemini 2.5 Pro a prompt. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
       );
       return;
     }
 
     try {
-      const result = await gemini25Pro.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
+      const result = await generateWithGemini25Pro(prompt);
+      const text = result.output[0].content[0].text;
 
       const chunkSize = 2000;
       let chunks = [];
@@ -2462,7 +2391,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
       console.error("Error:", error);
       message.reply(
-        "KingBot Gemini 2.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occured."
+        "KingBot Gemini 2.5 Pro is currently offline, has reached its maximum requests per minute, or an error has occurred."
       );
     }
   }
@@ -4223,7 +4152,7 @@ initializeKGBStock().then(updateKGBPrice);
 (async () => {
   try {
     mongoose.set("strictQuery", false);
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, { connectTimeoutMS: 60000 });
     console.log("Connected to DB.");
 
     client.login(process.env.TOKEN);

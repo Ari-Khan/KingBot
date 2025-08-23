@@ -120,29 +120,24 @@ const visionWithGemini25Flash = async (prompt, imageAttachment) => {
   const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
   const imageBuffer = Buffer.from(imageArrayBuffer);
 
-  const tempFilePath = path.join(__dirname, "temp_image.png");
-  fs.writeFileSync(tempFilePath, imageBuffer);
+  const base64Image = imageBuffer.toString("base64");
 
-  try {
-    const result = await googleGenAIClient.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      prompt,
-      files: [
-        {
-          name: imageAttachment.name || "image.png",
-          type: imageAttachment.contentType,
-          uri: `file://${tempFilePath}`,
-        },
-      ],
-      safetySettings,
-      temperature: 1.25,
-      maxOutputTokens: 8192,
-    });
+  const contents = [
+    {
+      inlineData: {
+        mimeType: imageAttachment.contentType,
+        data: base64Image,
+      },
+    },
+    { text: prompt },
+  ];
 
-    return result.output[0].content[0].text;
-  } finally {
-    fs.unlinkSync(tempFilePath);
-  }
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash-preview-05-20",
+    contents,
+  });
+
+  return response.text || "";
 };
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
@@ -264,7 +259,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$version") {
     message.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.9 \n\n**Discord.js Version** \n14.21.0 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n17.2.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.16.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.15.17.9 \n\n**Discord.js Version** \n14.22.1 \n\n**NPM Version** \n11.4.2 \n\n**Node.js Version** \n22.18.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n3.3.2 \n\n**DOTENV Version** \n17.2.1 \n\n**FS-Extra Version** \n11.3.1 \n\n**Mongoose Version** \n8.18.0 \n\n**Yahoo Finance (2) Version** \n2.13.3 \n\n**Google GenAI Version** \n1.15.0"
     );
   }
 });
@@ -2109,112 +2104,112 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$visual")) {
-    const isBanned = await checkIfAIBanned(message);
-    if (isBanned) return;
+  if (!message.content.startsWith("$visual")) return;
 
-    const imageAttachment = message.attachments.first();
-    const prompt = message.content.slice("$visual".length).trim();
+  const isBanned = await checkIfAIBanned(message);
+  if (isBanned) return;
 
-    if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
-      return message.reply(
-        "Please provide an image attachment with your `$visual` command."
-      );
+  const imageAttachment = message.attachments.first();
+  const prompt = message.content.slice("$visual".length).trim();
+
+  if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
+    return message.reply("Please provide an image attachment with your `$visual` command.");
+  }
+
+  if (!prompt) {
+    return message.reply(
+      "Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+    );
+  }
+
+  try {
+    const text = await visionWithGemini25Flash(prompt, imageAttachment);
+    const chunks = chunkText(text);
+    for (const chunk of chunks) {
+      await message.reply(chunk);
     }
-
-    if (!prompt) {
-      return message.reply(
-        "Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-      );
-    }
-
-    try {
-      const text = await visionWithGemini25Flash(prompt, imageAttachment);
-      const chunks = chunkText(text);
-      for (const chunk of chunks) {
-        await message.reply(chunk);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
-      );
-    }
+  } catch (error) {
+    console.error("Error:", error);
+    message.reply(
+      "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+    );
   }
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$vision")) {
-    const isBanned = await checkIfAIBanned(message);
-    if (isBanned) return;
+  if (!message.content.startsWith("$vision")) return;
 
-    const imageAttachment = message.attachments.first();
-    const prompt = message.content.slice("$vision".length).trim();
+  const isBanned = await checkIfAIBanned(message);
+  if (isBanned) return;
 
-    if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
-      return message.reply("Please provide an image attachment with your `$vision` command.");
+  const imageAttachment = message.attachments.first();
+  const prompt = message.content.slice("$vision".length).trim();
+
+  if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
+    return message.reply("Please provide an image attachment with your `$vision` command.");
+  }
+
+  if (!prompt) {
+    return message.reply(
+      "Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+    );
+  }
+
+  try {
+    const user = await User.findOne({ discordId: message.author.id });
+    const userName = user && user.name ? user.name : message.author.username + ", an Unnamed User";
+
+    const now = new Date();
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      weekday: "long",
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+    }).format(now);
+
+    const formattedTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }).format(now);
+
+    const visionConditions = [
+      "Background Information: ",
+      "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
+      "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. He likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolous for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
+      "Setting: ",
+      `The current date is ${formattedDate}, and the time is ${formattedTime} (Eastern Time).`,
+      "Conditions: ",
+      "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
+      "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
+      "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
+      "Don't get offended, be kind, be agreeable, and don't be arrogant.",
+      "Listen to prompts in a clear way and try to understand them better.",
+      "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
+      "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
+      "If you are talking to Ari, remember he is your creator, and don't speak in the third person, if they are not Ari, do not respond to them like you would to Ari.",
+      "11 PM to 6 AM is your bedtime, and you should only be sleepy at night.",
+      `You are currently talking to ${userName}.`
+    ];
+
+    const visionPrompt = visionConditions.join(" ") + ". Prompt: " + "Now answer this: " + prompt;
+    const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
+
+    await ChatHistory.create({ user: message.author.username, message: prompt });
+    await ChatHistory.create({ user: "KingBot", message: text });
+
+    const chunks = chunkText(text);
+    for (const chunk of chunks) {
+      await message.reply(chunk);
     }
-
-    if (!prompt) {
-      return message.reply(
-        "Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-      );
-    }
-
-    try {
-      const user = await User.findOne({ discordId: message.author.id });
-      const userName = user && user.name ? user.name : message.author.username + ", an Unnamed User";
-
-      const now = new Date();
-      const formattedDate = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        weekday: 'long',
-        month: 'long',
-        day: '2-digit',
-        year: 'numeric',
-      }).format(now);
-
-      const formattedTime = new Intl.DateTimeFormat('en-US', {
-        timeZone: 'America/New_York',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true,
-      }).format(now);
-
-      const visionConditions = [
-        "Background Information: ",
-        "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
-        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. He likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolous for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
-        "Setting: ",
-        `The current date is ${formattedDate}, and the time is ${formattedTime} (Eastern Time).`,
-        "Conditions: ",
-        "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
-        "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
-        "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
-        "Don't get offended, be kind, be agreeable, and don't be arrogant.",
-        "Listen to prompts in a clear way and try to understand them better.",
-        "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
-        "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
-        "If you are talking to Ari, remember he is your creator, and don't speak in the third person, if they are not Ari, do not respond to them like you would to Ari.",
-        "11 PM to 6 AM is your bedtime, and you should only be sleepy at night.",
-        `You are currently talking to ${userName}.`
-      ];
-
-      const visionPrompt = visionConditions.join(" ") + ". Prompt: " + "Now answer this: " + prompt;
-      const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
-
-      await ChatHistory.create({ user: message.author.username, message: prompt });
-      await ChatHistory.create({ user: "KingBot", message: text });
-
-      const chunks = chunkText(text);
-      for (const chunk of chunks) {
-        await message.reply(chunk);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply("KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred.");
-    }
+  } catch (error) {
+    console.error("Error:", error);
+    message.reply(
+      "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+    );
   }
 });
 
@@ -2538,7 +2533,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "version") {
     return interaction.reply(
-      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.14.17.8 \n\n**Discord.js Version** \n14.21.0 \n\n**NPM Version** \n11.1.0 \n\n**Node.js Version** \n22.13.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n2.7.0 \n\n**DOTENV Version** \n17.2.0 \n\n**FS-Extra Version** \n11.3.0 \n\n**Nodemon Version** \n3.1.7 \n\n**Mongoose Version** \n8.16.3 \n\n**Yahoo Finance (2)** \n2.13.2 \n\n**Google Generative AI Version** \n0.24.1"
+      "**Bot Version** \nThe following are all the versions of KingBot and its dependencies. \n\n**KingBot Version** \n1.6.15.17.9 \n\n**Discord.js Version** \n14.22.1 \n\n**NPM Version** \n11.4.2 \n\n**Node.js Version** \n22.18.0 \n\n**Nodemon Version** \n3.1.10 \n\n**Node-Fetch Version** \n3.3.2 \n\n**DOTENV Version** \n17.2.1 \n\n**FS-Extra Version** \n11.3.1 \n\n**Mongoose Version** \n8.18.0 \n\n**Yahoo Finance (2) Version** \n2.13.3 \n\n**Google GenAI Version** \n1.15.0"
     );
   }
 });

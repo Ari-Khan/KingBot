@@ -135,9 +135,10 @@ async function visionWithGemini25Flash(prompt, imageAttachment) {
   const response = await googleGenAIClient.models.generateContent({
     model: "gemini-2.5-flash-preview-05-20",
     contents: contents,
+    config: { temperature: 1.25 },
   });
 
-  return response.text || "";
+  return response.text || response.output_text || "";
 }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
@@ -2105,13 +2106,12 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (!message.content.startsWith("$visual")) return;
-
   if (await checkIfAIBanned(message)) return;
 
   const imageAttachment = message.attachments.first();
   const prompt = message.content.slice("$visual".length).trim();
 
-  if (!imageAttachment || !imageAttachment.contentType.startsWith("image/")) {
+  if (!imageAttachment || !imageAttachment.name?.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
     return message.reply("Please provide an image attachment with your `$visual` command.");
   }
 
@@ -2120,12 +2120,36 @@ client.on("messageCreate", async (message) => {
   }
 
   try {
-    const text = await visionWithGemini25Flash(prompt, imageAttachment);
-    const chunks = chunkText(text || "");
-    for (const chunk of chunks) await message.reply(chunk);
+    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
+    const imageBuffer = Buffer.from(imageArrayBuffer);
+    const base64Image = imageBuffer.toString("base64");
+
+    const contents = [
+      {
+        inlineData: {
+          mimeType: imageAttachment.contentType || "image/png",
+          data: base64Image,
+        },
+      },
+      { text: prompt },
+    ];
+
+    const response = await googleGenAIClient.models.generateContent({
+      model: "gemini-2.5-flash-preview-05-20",
+      contents,
+      config: { temperature: 1.25 },
+      safetySettings,
+    });
+
+    const text = response.text || response.output_text || "";
+    const chunks = chunkText(text);
+
+    for (const chunk of chunks) {
+      await message.reply(chunk);
+    }
   } catch (err) {
     console.error("Error:", err);
-    message.reply("KingBot Gemini 2.5 Flash is currently offline or an error occurred.");
+    message.reply("There was an error processing your request. Please try again later.");
   }
 });
 

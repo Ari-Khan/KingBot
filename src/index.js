@@ -2106,8 +2106,7 @@ client.on("messageCreate", async (message) => {
 client.on("messageCreate", async (message) => {
   if (!message.content.startsWith("$visual")) return;
 
-  const isBanned = await checkIfAIBanned(message);
-  if (isBanned) return;
+  if (await checkIfAIBanned(message)) return;
 
   const imageAttachment = message.attachments.first();
   const prompt = message.content.slice("$visual".length).trim();
@@ -2117,30 +2116,23 @@ client.on("messageCreate", async (message) => {
   }
 
   if (!prompt) {
-    return message.reply(
-      "Please provide a text prompt along with the image to use the `$visual` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-    );
+    return message.reply("Please provide a text prompt along with the image.");
   }
 
   try {
     const text = await visionWithGemini25Flash(prompt, imageAttachment);
-    const chunks = chunkText(text);
-    for (const chunk of chunks) {
-      await message.reply(chunk);
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    message.reply(
-      "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
-    );
+    const chunks = chunkText(text || "");
+    for (const chunk of chunks) await message.reply(chunk);
+  } catch (err) {
+    console.error("Error:", err);
+    message.reply("KingBot Gemini 2.5 Flash is currently offline or an error occurred.");
   }
 });
 
 client.on("messageCreate", async (message) => {
   if (!message.content.startsWith("$vision")) return;
 
-  const isBanned = await checkIfAIBanned(message);
-  if (isBanned) return;
+  if (await checkIfAIBanned(message)) return;
 
   const imageAttachment = message.attachments.first();
   const prompt = message.content.slice("$vision".length).trim();
@@ -2151,13 +2143,13 @@ client.on("messageCreate", async (message) => {
 
   if (!prompt) {
     return message.reply(
-      "Please provide a text prompt along with the image to use the `$vision` command. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+      "Please provide a text prompt along with the image to use the `$vision` command.\n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content."
     );
   }
 
   try {
     const user = await User.findOne({ discordId: message.author.id });
-    const userName = user && user.name ? user.name : message.author.username + ", an Unnamed User";
+    const userName = user?.name || `${message.author.username}, an Unnamed User`;
 
     const now = new Date();
     const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -2195,16 +2187,30 @@ client.on("messageCreate", async (message) => {
       `You are currently talking to ${userName}.`
     ];
 
-    const visionPrompt = visionConditions.join(" ") + ". Prompt: " + "Now answer this: " + prompt;
-    const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
+    const visionPrompt = visionConditions.join(" ") + ". Prompt: " + prompt;
+
+    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
+    const base64Image = Buffer.from(imageArrayBuffer).toString("base64");
+
+    const contents = [
+      { inlineData: { mimeType: imageAttachment.contentType, data: base64Image } },
+      { text: visionPrompt }
+    ];
+
+    const response = await googleGenAIClient.models.generateContent({
+      model: "gemini-2.5-flash-preview-05-20",
+      contents,
+      config: { temperature: 1.25 }
+    });
+
+    const text = response.text || response.output_text || "";
 
     await ChatHistory.create({ user: message.author.username, message: prompt });
     await ChatHistory.create({ user: "KingBot", message: text });
 
-    const chunks = chunkText(text);
-    for (const chunk of chunks) {
-      await message.reply(chunk);
-    }
+    const chunks = chunkText(text || "");
+    for (const chunk of chunks) await message.reply(chunk);
+
   } catch (error) {
     console.error("Error:", error);
     message.reply(

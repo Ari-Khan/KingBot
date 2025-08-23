@@ -116,7 +116,7 @@ async function generateWithGemini25Pro(prompt) {
   return response.output_text || response.text || response.output?.[0]?.content || "";
 }
 
-const visionWithGemini25Flash = async (prompt, imageAttachment) => {
+async function visionWithGemini25Flash(prompt, imageAttachment) {
   const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
   const imageBuffer = Buffer.from(imageArrayBuffer);
 
@@ -134,11 +134,11 @@ const visionWithGemini25Flash = async (prompt, imageAttachment) => {
 
   const response = await googleGenAIClient.models.generateContent({
     model: "gemini-2.5-flash-preview-05-20",
-    contents,
+    contents: contents,
   });
 
   return response.text || "";
-};
+}
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const ollama = new Ollama({ baseURL: "http://localhost:11434/api/generate" });

@@ -132,7 +132,7 @@ const visionWithGemini25Flash = async (prompt, imageAttachment) => {
     { text: prompt },
   ];
 
-  const response = await ai.models.generateContent({
+  const response = await googleGenAIClient.models.generateContent({
     model: "gemini-2.5-flash-preview-05-20",
     contents,
   });

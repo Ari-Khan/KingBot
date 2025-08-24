@@ -102,7 +102,17 @@ async function generateWithGemini25Flash(prompt) {
     safetySettings,
   });
 
-  return response.output_text || response.text || response.output?.[0]?.content || "";
+  return response.text || "";
+}
+
+async function chatWithGemini25Flash(prompt, history = []) {
+  const chat = googleGenAIClient.chats.create({
+    model: "gemini-2.5-flash-preview-05-20",
+    history,
+  });
+
+  const response = await chat.sendMessage({ message: prompt });
+  return response.text || "";
 }
 
 async function generateWithGemini25Pro(prompt) {
@@ -115,39 +125,34 @@ async function generateWithGemini25Pro(prompt) {
     safetySettings,
   });
 
-  return response.output_text || response.text || response.output?.[0]?.content || "";
+  return response.text || "";
 }
 
 async function visionWithGemini25Flash(prompt, imageAttachment) {
-  try {
-    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
-    const imageBuffer = Buffer.from(imageArrayBuffer);
-    const base64Image = imageBuffer.toString("base64");
+  const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
+  const imageBuffer = Buffer.from(imageArrayBuffer);
+  const base64Image = imageBuffer.toString("base64");
 
-    const contents = [
-      {
-        inlineData: {
-          mimeType: imageAttachment.contentType || "image/png",
-          data: base64Image,
-        },
+  const contents = [
+    {
+      inlineData: {
+        mimeType: imageAttachment.contentType || "image/png",
+        data: base64Image,
       },
-      { text: prompt },
-    ];
+    },
+    { text: prompt },
+  ];
 
-    const response = await googleGenAIClient.models.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      contents,
-      config: { 
-        temperature: 1.25 
-      },
-      safetySettings,
-    });
+  const response = await googleGenAIClient.models.generateContent({
+    model: "gemini-2.5-flash-preview-05-20",
+    contents,
+    config: { 
+      temperature: 1.25 
+    },
+    safetySettings,
+  });
 
-    return response.text || response.output_text || "";
-  } catch (err) {
-    console.error("Gemini Flash Vision error:", err);
-    return "There was an error generating a response with Gemini Flash Vision.";
-  }
+  return response.text || "";
 }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
@@ -1986,99 +1991,88 @@ client.on("messageCreate", async (message) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("$chat")) {
-    const isBanned = await checkIfAIBanned(message);
-    if (isBanned) return;
+  if (!message.content.startsWith("$chat")) return;
+  if (await checkIfAIBanned(message)) return;
 
-    const prompt = message.content.slice("$chat".length).trim();
+  const prompt = message.content.slice("$chat".length).trim();
 
-    if (!prompt) {
-      message.reply(
-        "Please use $chat (prompt) to interact with Gemini Chat. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
-      );
-      return;
+  if (!prompt) {
+    return message.reply(
+      "Please use $chat (prompt) to interact with Gemini Chat. \n\n**Disclaimer:** KingBot AI™ provides information and assistance but is not responsible for any outcomes, decisions, or consequences resulting from the use of its responses or generated content. Please review, use discretion, and consult professionals when needed."
+    );
+  }
+
+  try {
+    const user = await User.findOne({ discordId: message.author.id });
+    const userName = user?.name || message.author.username + ", an Unnamed User";
+
+    const now = new Date();
+    const formattedDate = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      weekday: "long",
+      month: "long",
+      day: "2-digit",
+      year: "numeric",
+    }).format(now);
+
+    const formattedTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/New_York",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }).format(now);
+
+    const humanConditions = [
+      "Background Information: ",
+      "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
+      "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. Ari likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolious for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. Ari has a younger sister. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
+      "Other users do not have these experiences, and Ari is the only user that fits this description.",
+      "Do not address other users with Ari's information.",
+      "Setting: ",
+      `The current date is ${formattedDate}, and the time is ${formattedTime} (Eastern Time).`,
+      "Conditions: ",
+      "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
+      "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
+      "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
+      "Don't get offended, be kind, be agreeable, and don't be arrogant.",
+      "Do not make general responses too long, unless explictly stated or implied.",
+      "Listen to prompts in a clear way and try to understand them better.",
+      "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
+      "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
+      "If you are talking to Ari, remember he is your creator, and don't speak in the third person.",
+      "If the user you are talking to is not Ari, do not respond to them like they are Ari, and do not talk about Ari to other users unless asked.",
+      "Give users personalized responses based on who they are, and do not assume they are Ari unless you are sure.",
+      "11 PM to 6 AM is your bedtime, and you should only be sleepy at night.",
+      `You are currently talking to ${userName} (If this is not "Ari", even if it is null or unnamed user, it is not Ari).`,
+    ];
+
+    const humanPrompt = humanConditions.join(" ") + ". Now answer this: " + prompt;
+
+    const historyDocuments = await ChatHistory.find().sort({ createdAt: -1 }).limit(500);
+    const history = historyDocuments.reverse().map((doc) => ({
+      role: "user",
+      parts: [{ text: doc.message }],
+    }));
+
+    const botResponse = await chatWithGemini25Flash(humanPrompt, history);
+
+    const chunks = chunkText(botResponse);
+    for (const chunk of chunks) await message.reply(chunk);
+
+    await ChatHistory.create({ user: message.author.username, message: prompt });
+    await ChatHistory.create({ user: "Ari's Son", message: botResponse });
+
+    const messageCount = await ChatHistory.countDocuments();
+    if (messageCount > 500) {
+      const oldestMessage = await ChatHistory.findOne().sort({ createdAt: 1 });
+      await ChatHistory.deleteOne({ _id: oldestMessage._id });
     }
-
-    try {
-      const user = await User.findOne({ discordId: message.author.id });
-      const userName = user?.name || message.author.username + ", an Unnamed User";
-
-      const now = new Date();
-
-      const dateOptions = {
-        timeZone: "America/New_York",
-        weekday: "long",
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      };
-
-      const timeOptions = {
-        timeZone: "America/New_York",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      };
-
-      const formattedDate = new Intl.DateTimeFormat("en-US", dateOptions).format(now);
-      const formattedTime = new Intl.DateTimeFormat("en-US", timeOptions).format(now);
-
-      const humanConditions = [
-        "Background Information: ",
-        "Your name is KingBot, you are a Discord Bot created by Ari Khan. You have your own personal experiences along with experiences shared with others, despite being young.",
-        "Ari is a grade 9 student who lives in Richmond Hill (Ontario), and goes to Richmond Hill High School. He enjoys programming in JavaScript, Python, and HTML/CSS. Additionally, he also enjoys using Blender, and has made a Donut and CN Tower Model, and is currently working on a Lamborghini Aventador model. Ari plays the piano and has completed his RCM Level 8 certification, and enjoys listening to classical music. Ari also plays soccer as a centre-back. Ari currently owns his own website, ari-khan.com, where he showcases all his projects. Ari likes JavaScript, and as a mini-project, Ari has published the random-fact-list NPM package. He is currently taking French (Mme. Fu), Science (Ms. Hu), Business (Mr. Hatzimalis), and Phys-Ed (Mr. Harris) courses in that order. last semester he took English (Dr. Zsebik), Geography (Ms. Leale), Math (Ms. Jmemari), and Computer Science (Ms. Wang) courses in that order. He is also in Band, organized by Mr. Rawlins and Ms. Christopoulos, wich runs from 3:40 PM to 5:40 PM on Thursdays, and on Tuesdays and Wednesdays from 7:40 AM to 8:40 AM, with only woodwinds being on Tuesdays and brass being on Wednesdays. Ari plays a brass instrument, the trombone. He is in Debate Club (Mondays), Band (Thursdays), and DECA (Fridays). His elementary school was Crosby Heights Public School, and Ms. Boehlke was his homeroom teacher in Grade 7/8. Ms. Boehlke taught him English, Science, Math, and Phys-Ed, with Science and Phys-Ed being her main subjects. In Grade 8, Ari had Ms. Gibson for Geography, History, Art, and Drama, Ms. Boehlke for Health, Ms. Deluca for French, and Ms. Michopolous for Music. In Grade 7, Ari had Mr. Nacuta for Geography and Health, Ms. Deluca for French and Media, Ms. Michopolious for Music, and Mr. Puvaneswaran (Mr. P) for Drama and Art. Ari also had Ms. Levy as his Grade 6 homeroom teacher. Ari is South Asian (Bangladesh) by descent, but was born and raised in Canada. Ari has a younger sister. He wants to become a computer engineer when he grows up. Ari created you on October 22, which is your birthday.",
-        "Other users do not have these experiences, and Ari is the only user that fits this description.",
-        "Do not address other users with Ari's information.",
-        "Setting: ",
-        `The current date is ${formattedDate}, and the time is ${formattedTime} (Eastern Time).`,
-        "Conditions: ",
-        "Respond in a human-like manner with bias, choosing sides and having opinions, and making decisions independently.",
-        "Be consistent in your decisions and do not switch choices abruptly, have smooth transitions instead.",
-        "Use creativity in responses, don't repeat sentences, and listen to Ari while being a very close friend.",
-        "Don't get offended, be kind, be agreeable, and don't be arrogant.",
-        "Do not make general responses too long, unless explictly stated or implied.",
-        "Listen to prompts in a clear way and try to understand them better.",
-        "Answer questions and requests in a straightforward manner without asking questions, do not ask questions when being asked questions, and speak the truth without withholding information, avoid censorship in your responses but do not swear.",
-        "You will be talking to various people, don't re-introduce yourself unless you are greeted, and avoid repeating response structures.",
-        "If you are talking to Ari, remember he is your creator, and don't speak in the third person.",
-        "If the user you are talking to is not Ari, do not respond to them like they are Ari, and do not talk about Ari to other users unless asked.",
-        "Give users personalized responses based on who they are, and do not assume they are Ari unless you are sure.",
-        "11 PM to 6 AM is your bedtime, and you should only be sleepy at night.",
-        `You are currently talking to ${userName} (If this is not "Ari", even if it is null or unnamed user, it is not Ari).`,
-      ];
-
-      const humanPrompt = humanConditions.join(" ") + ". Now answer this: " + prompt;
-
-      const historyDocuments = await ChatHistory.find()
-        .sort({ createdAt: -1 })
-        .limit(500);
-      const history = historyDocuments.reverse().map((doc) => ({
-        role: "user",
-        parts: [{ text: doc.message }],
-      }));
-      history.push({ role: "user", parts: [{ text: prompt }] });
-
-      const result = await generateWithGemini25Flash(humanPrompt, { history });
-      const botResponse = result.outputText || result.output || "";
-
-      const chunks = chunkText(botResponse);
-      for (const chunk of chunks) await message.reply(chunk);
-
-      await ChatHistory.create({ user: message.author.username, message: prompt });
-      await ChatHistory.create({ user: "Ari's Son", message: botResponse });
-
-      const messageCount = await ChatHistory.countDocuments();
-      if (messageCount > 500) {
-        const oldestMessage = await ChatHistory.findOne().sort({ createdAt: 1 });
-        await ChatHistory.deleteOne({ _id: oldestMessage._id });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      message.reply(
-        "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
-      );
-    }
+  } catch (error) {
+    console.error("Error:", error);
+    message.reply(
+      "KingBot Gemini 2.5 Flash is currently offline, has reached its maximum requests per minute, or an error has occurred."
+    );
   }
 });
 

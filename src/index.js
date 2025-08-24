@@ -99,6 +99,7 @@ async function generateWithGemini25Flash(prompt) {
     config: {
       temperature: 1.25,
     },
+    safetySettings,
   });
 
   return response.output_text || response.text || response.output?.[0]?.content || "";
@@ -111,34 +112,42 @@ async function generateWithGemini25Pro(prompt) {
     config: {
       temperature: 1.25,
     },
+    safetySettings,
   });
 
   return response.output_text || response.text || response.output?.[0]?.content || "";
 }
 
 async function visionWithGemini25Flash(prompt, imageAttachment) {
-  const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
-  const imageBuffer = Buffer.from(imageArrayBuffer);
+  try {
+    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
+    const imageBuffer = Buffer.from(imageArrayBuffer);
+    const base64Image = imageBuffer.toString("base64");
 
-  const base64Image = imageBuffer.toString("base64");
-
-  const contents = [
-    {
-      inlineData: {
-        mimeType: imageAttachment.contentType,
-        data: base64Image,
+    const contents = [
+      {
+        inlineData: {
+          mimeType: imageAttachment.contentType || "image/png",
+          data: base64Image,
+        },
       },
-    },
-    { text: prompt },
-  ];
+      { text: prompt },
+    ];
 
-  const response = await googleGenAIClient.models.generateContent({
-    model: "gemini-2.5-flash-preview-05-20",
-    contents: contents,
-    config: { temperature: 1.25 },
-  });
+    const response = await googleGenAIClient.models.generateContent({
+      model: "gemini-2.5-flash-preview-05-20",
+      contents,
+      config: { 
+        temperature: 1.25 
+      },
+      safetySettings,
+    });
 
-  return response.text || response.output_text || "";
+    return response.text || response.output_text || "";
+  } catch (err) {
+    console.error("Gemini Flash Vision error:", err);
+    return "There was an error generating a response with Gemini Flash Vision.";
+  }
 }
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
@@ -2120,28 +2129,7 @@ client.on("messageCreate", async (message) => {
   }
 
   try {
-    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
-    const imageBuffer = Buffer.from(imageArrayBuffer);
-    const base64Image = imageBuffer.toString("base64");
-
-    const contents = [
-      {
-        inlineData: {
-          mimeType: imageAttachment.contentType || "image/png",
-          data: base64Image,
-        },
-      },
-      { text: prompt },
-    ];
-
-    const response = await googleGenAIClient.models.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      contents,
-      config: { temperature: 1.25 },
-      safetySettings,
-    });
-
-    const text = response.text || response.output_text || "";
+    const text = await visionWithGemini25Flash(prompt, imageAttachment);
     const chunks = chunkText(text);
 
     for (const chunk of chunks) {
@@ -2155,7 +2143,6 @@ client.on("messageCreate", async (message) => {
 
 client.on("messageCreate", async (message) => {
   if (!message.content.startsWith("$vision")) return;
-
   if (await checkIfAIBanned(message)) return;
 
   const imageAttachment = message.attachments.first();
@@ -2213,21 +2200,7 @@ client.on("messageCreate", async (message) => {
 
     const visionPrompt = visionConditions.join(" ") + ". Prompt: " + prompt;
 
-    const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
-    const base64Image = Buffer.from(imageArrayBuffer).toString("base64");
-
-    const contents = [
-      { inlineData: { mimeType: imageAttachment.contentType, data: base64Image } },
-      { text: visionPrompt }
-    ];
-
-    const response = await googleGenAIClient.models.generateContent({
-      model: "gemini-2.5-flash-preview-05-20",
-      contents,
-      config: { temperature: 1.25 }
-    });
-
-    const text = response.text || response.output_text || "";
+    const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
 
     await ChatHistory.create({ user: message.author.username, message: prompt });
     await ChatHistory.create({ user: "KingBot", message: text });

@@ -108,6 +108,8 @@ async function generateWithGemini25Flash(prompt) {
 async function chatWithGemini25Flash(prompt, history = []) {
   const chat = googleGenAIClient.chats.create({
     model: "gemini-2.5-flash-preview-05-20",
+    temperature: 1.25,
+    safetySettings: safetySettings,
     history,
   });
 

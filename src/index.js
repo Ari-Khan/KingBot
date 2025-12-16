@@ -3536,7 +3536,7 @@ async function updateKGBPrice() {
     try {
       const stock = await KingBotStock.findOne({ symbol: "KGB" });
 
-      const drift = 0.0002;
+      const drift = 0.0000005;
 
       let priceChangePercentage =
         (Math.random() * 0.02) - 0.01 + drift;

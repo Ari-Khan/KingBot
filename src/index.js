@@ -188,49 +188,33 @@ const yahooFinance = new YahooFinance({
 
 client.setMaxListeners(Infinity);
 
-client.on("ready", async (c) => {
-  const guilds = client.guilds.cache;
-  const promiseArr = [];
+let totalUsers = 0;
+let totalGuilds = 0;
 
-  guilds.forEach((guild) => {
-    promiseArr.push(
-      new Promise(async (resolve, _reject) => {
-        let members = await guild.members.fetch();
-        members = members.filter((m) => !m.user.bot);
-        resolve(members.size);
-      })
-    );
-  });
+client.on("clientReady", async (c) => {
+  let totalUsers = 0;
 
-  let results = await Promise.all(promiseArr);
-  let totalUsers = results.reduce((prevVal, currVal) => prevVal + currVal);
+  for (const guild of client.guilds.cache.values()) {
+    const members = await guild.members.fetch();
+    totalUsers += members.filter(m => !m.user.bot).size;
+  }
 
-  let status = [
+  const totalGuilds = client.guilds.cache.size;
+
+  const status = [
     { name: "$help", type: ActivityType.Playing },
     { name: `${totalUsers} users!`, type: ActivityType.Watching },
     { name: "$help", type: ActivityType.Playing },
     { name: `${totalUsers} users!`, type: ActivityType.Watching },
-    { name: `${client.guilds.cache.size} servers!`, type: ActivityType.Watching },
+    { name: `${totalGuilds} servers!`, type: ActivityType.Watching },
   ];
 
   console.log(`${c.user.tag} is Online!`);
 
   setInterval(() => {
-    let random = Math.floor(Math.random() * status.length);
+    const random = Math.floor(Math.random() * status.length);
     client.user.setActivity(status[random]);
-  }, 10000);
-});
-
-let totalUsers = 0;
-let totalGuilds = 0;
-
-client.on("ready", async () => {
-  for (const guild of client.guilds.cache) {
-    const members = await guild[1].members.fetch();
-    const nonBotMembers = members.filter((member) => !member.user.bot);
-    totalUsers += nonBotMembers.size;
-  }
-  totalGuilds = client.guilds.cache.size;
+  }, 10_000);
 });
 
 //Information/Management

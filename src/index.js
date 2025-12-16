@@ -92,9 +92,9 @@ const safetySettings = [
   { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
 ];
 
-async function generateWithGemini25Flash(prompt) {
+async function generateWithGeminiFlash(prompt) {
   const response = await googleGenAIClient.models.generateContent({
-    model: "gemini-2.5-flash-preview-05-20",
+    model: "gemini-2.5-flash-latest",
     contents: prompt,
     config: {
       temperature: 1.25,
@@ -105,9 +105,9 @@ async function generateWithGemini25Flash(prompt) {
   return response.text || "";
 }
 
-async function chatWithGemini25Flash(prompt, history = []) {
+async function chatWithGeminiFlash(prompt, history = []) {
   const chat = googleGenAIClient.chats.create({
-    model: "gemini-2.5-flash-preview-05-20",
+    model: "gemini-flash-latest",
     temperature: 1.25,
     safetySettings: safetySettings,
     history,
@@ -117,9 +117,9 @@ async function chatWithGemini25Flash(prompt, history = []) {
   return response.text || "";
 }
 
-async function generateWithGemini25Pro(prompt) {
+async function generateWithGeminiPro(prompt) {
   const response = await googleGenAIClient.models.generateContent({
-    model: "gemini-2.5-pro",
+    model: "gemini-pro-latest",
     contents: prompt,
     config: {
       temperature: 1.25,
@@ -130,7 +130,7 @@ async function generateWithGemini25Pro(prompt) {
   return response.text || "";
 }
 
-async function visionWithGemini25Flash(prompt, imageAttachment) {
+async function visionWithGeminiFlash(prompt, imageAttachment) {
   const imageArrayBuffer = await fetch(imageAttachment.url).then(res => res.arrayBuffer());
   const imageBuffer = Buffer.from(imageArrayBuffer);
   const base64Image = imageBuffer.toString("base64");
@@ -1980,7 +1980,7 @@ client.on("messageCreate", async (message) => {
   }
 
   try {
-    const text = await generateWithGemini25Flash(prompt);
+    const text = await generateWithGeminiFlash(prompt);
 
     const chunks = chunkText(text);
     for (const chunk of chunks) await message.reply(chunk);
@@ -2057,7 +2057,7 @@ client.on("messageCreate", async (message) => {
       parts: [{ text: doc.message }],
     }));
 
-    const botResponse = await chatWithGemini25Flash(humanPrompt, history);
+    const botResponse = await chatWithGeminiFlash(humanPrompt, history);
 
     const chunks = chunkText(botResponse);
     for (const chunk of chunks) await message.reply(chunk);
@@ -2125,7 +2125,7 @@ client.on("messageCreate", async (message) => {
   }
 
   try {
-    const text = await visionWithGemini25Flash(prompt, imageAttachment);
+    const text = await visionWithGeminiFlash(prompt, imageAttachment);
     const chunks = chunkText(text);
 
     for (const chunk of chunks) {
@@ -2196,7 +2196,7 @@ client.on("messageCreate", async (message) => {
 
     const visionPrompt = visionConditions.join(" ") + ". Prompt: " + prompt;
 
-    const text = await visionWithGemini25Flash(visionPrompt, imageAttachment);
+    const text = await visionWithGeminiFlash(visionPrompt, imageAttachment);
 
     await ChatHistory.create({ user: message.author.username, message: prompt });
     await ChatHistory.create({ user: "KingBot", message: text });
@@ -2319,7 +2319,7 @@ client.on("messageCreate", async (message) => {
     }
 
     try {
-      const result = await generateWithGemini25Pro(prompt);
+      const result = await generateWithGeminiPro(prompt);
       const text = result.output[0].content[0].text;
 
       const chunkSize = 2000;

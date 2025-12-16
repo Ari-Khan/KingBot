@@ -3541,11 +3541,11 @@ async function updateKGBPrice() {
       let priceChangePercentage =
         (Math.random() * 0.02) - 0.01 + drift;
 
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.03) {
         priceChangePercentage += (Math.random() * 0.06) - 0.03;
       }
 
-      if (Math.random() < 0.003) {
+      if (Math.random() < 0.001) {
         priceChangePercentage += (Math.random() * 0.20) - 0.10;
       }
 

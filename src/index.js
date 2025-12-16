@@ -3535,7 +3535,20 @@ async function updateKGBPrice() {
   setInterval(async () => {
     try {
       const stock = await KingBotStock.findOne({ symbol: "KGB" });
-      const priceChangePercentage = (Math.random() * (0.0051 + 0.005) - 0.005);
+
+      const drift = 0.0002;
+
+      let priceChangePercentage =
+        (Math.random() * 0.02) - 0.01 + drift;
+
+      if (Math.random() < 0.05) {
+        priceChangePercentage += (Math.random() * 0.06) - 0.03;
+      }
+
+      if (Math.random() < 0.003) {
+        priceChangePercentage += (Math.random() * 0.20) - 0.10;
+      }
+
       stock.price += stock.price * priceChangePercentage;
 
       if (stock.price < 10) {
@@ -3544,81 +3557,9 @@ async function updateKGBPrice() {
 
       await stock.save();
     } catch (error) {
-      console.error("Error updating stock price (base effect):", error);
+      console.error("Error updating stock price:", error);
     }
   }, 10000);
-
-  setInterval(async () => {
-    try {
-      const stock = await KingBotStock.findOne({ symbol: "KGB" });
-      const priceChangePercentage = (Math.random() * (0.01 + 0.01) - 0.01);
-      stock.price += stock.price * priceChangePercentage;
-
-      if (stock.price < 10) {
-        stock.price = 10;
-      }
-
-      await stock.save();
-    } catch (error) {
-      console.error("Error updating stock price (minute effect):", error);
-    }
-  }, 60000);
-
-  setInterval(async () => {
-    try {
-      const stock = await KingBotStock.findOne({ symbol: "KGB" });
-      const now = new Date();
-
-      if (stock.lastHourChange) {
-        const timeElapsed = (now - stock.lastHourChange) / 1000;
-        if (timeElapsed >= 3600) {
-          const priceChangePercentage = (Math.random() * (0.05 + 0.06) - 0.06);
-          stock.price += stock.price * priceChangePercentage;
-
-          if (stock.price < 10) {
-            stock.price = 10;
-          }
-
-          stock.lastHourChange = now;
-          await stock.save();
-        }
-      } else {
-        stock.lastHourChange = now;
-        await stock.save();
-        console.log("No last hour change timestamp found, setting to current time without price change.");
-      }
-    } catch (error) {
-      console.error("Error updating stock price (hour effect):", error);
-    }
-  }, 60000);
-
-  setInterval(async () => {
-    try {
-      const stock = await KingBotStock.findOne({ symbol: "KGB" });
-      const now = new Date();
-
-      if (stock.lastHalfDayChange) {
-        const timeElapsed = (now - stock.lastHalfDayChange) / 1000;
-        if (timeElapsed >= 43200) {
-          const priceChangePercentage = (Math.random() * (0.10 + 0.25) - 0.25);
-          stock.price += stock.price * priceChangePercentage;
-
-          if (stock.price < 10) {
-            stock.price = 10;
-          }
-
-          stock.lastHalfDayChange = now;
-          await stock.save();
-        }
-      } else {
-        stock.lastHalfDayChange = now;
-        await stock.save();
-        console.log("No last half-day change timestamp found, setting to current time without price change.");
-      }
-    } catch (error) {
-      console.error("Error updating stock price (half-day effect):", error);
-    }
-  }, 60000);
 }
 
 async function buyKingbotStock(message, amount) {

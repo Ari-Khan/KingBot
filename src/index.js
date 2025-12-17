@@ -272,7 +272,7 @@ client.on("messageCreate", (message) => {
 client.on("messageCreate", (message) => {
   if (message.content === "$links") {
     message.reply(
-      "**Top.gg:** \nhttps://top.gg/bot/1168240045510107308 \n**GitHub Repository:** \nhttps://github.com/Proking4444/KingBot \n**Website:** \nhttps://www.ari-khan.com"
+      "**Top.gg:** \nhttps://top.gg/bot/1168240045510107308 \n**GitHub Repository:** \nhttps://github.com/Ari-Khan/kingbot \n**Website:** \nhttps://www.ari-khan.com"
     );
   }
 });
@@ -2530,7 +2530,7 @@ client.on("interactionCreate", (interaction) => {
 
   if (interaction.commandName === "links") {
     return interaction.reply(
-      "**Top.gg:** \nhttps://top.gg/bot/1168240045510107308 \n**GitHub Repository:** \nhttps://github.com/Proking4444/KingBot \n**Website:** \nhttps://www.ari-khan.com"
+      "**Top.gg:** \nhttps://top.gg/bot/1168240045510107308 \n**GitHub Repository:** \nhttps://github.com/Ari-Khan/kingbot \n**Website:** \nhttps://www.ari-khan.com"
     );
   }
 });
